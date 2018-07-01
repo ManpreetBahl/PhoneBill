@@ -36,8 +36,8 @@ public class PhoneCall extends AbstractPhoneCall {
   public PhoneCall(String callerNumber, String calleeNumber, String startTime, String endTime){
     validateNumber(callerNumber);
     validateNumber(calleeNumber);
-    validateTime(startTime);
-    validateTime(endTime);
+    validateDateTime(startTime);
+    validateDateTime(endTime);
 
     this.callerNumber = callerNumber;
     this.calleeNumber = calleeNumber;
@@ -57,11 +57,14 @@ public class PhoneCall extends AbstractPhoneCall {
     }
   }
 
-  private void validateTime(String time){
-    /*
-      The code below was derived from reading through the documentation on DateTimeFormatter found at this URL:
-        https://docs.oracle.com/javase/10/docs/api/java/time/format/DateTimeFormatter.html
-    */
+  /**
+   * Validates the datetime string. The code below was derived from reading through the documentation on
+   * DateTimeFormatter found at this URL:
+   *        https://docs.oracle.com/javase/10/docs/api/java/time/format/DateTimeFormatter.html
+   * @param time
+   *        The datetime string to validate
+   */
+  private void validateDateTime(String time){
     // DateTime format patterns that are acceptable
     String[] patterns = {"M/d/uuuu h:mm", "M/d/uuuu H:mm", "M/d/uuuu k:mm", "M/d/uuuu K:mm"};
 
