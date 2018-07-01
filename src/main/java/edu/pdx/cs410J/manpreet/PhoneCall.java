@@ -2,25 +2,20 @@ package edu.pdx.cs410J.manpreet;
 
 import edu.pdx.cs410J.AbstractPhoneCall;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.regex.Pattern;
 
 public class PhoneCall extends AbstractPhoneCall {
+
   /**
-  Fields
+   * Class fields
    */
-  private String callerNumber = null;
-  private String calleeNumber = null;
-  private String startTime = null;
-  private String endTime = null;
+  private String callerNumber;
+  private String calleeNumber;
+  private String startTime;
+  private String endTime;
 
   /**
    * Constructor
@@ -82,21 +77,21 @@ public class PhoneCall extends AbstractPhoneCall {
 
   @Override
   public String getCaller() {
-    throw new UnsupportedOperationException("This method is not implemented yet");
+    return this.callerNumber;
   }
 
   @Override
   public String getCallee() {
-    return "This method is not implemented yet";
+    return this.calleeNumber;
   }
 
   @Override
   public String getStartTimeString() {
-    throw new UnsupportedOperationException("This method is not implemented yet");
+    return this.startTime;
   }
 
   @Override
   public String getEndTimeString() {
-    throw new UnsupportedOperationException("This method is not implemented yet");
+    return this.endTime;
   }
 }
