@@ -17,7 +17,6 @@ public class PhoneCall extends AbstractPhoneCall {
   /**
   Fields
    */
-  private String customer = null;
   private String callerNumber = null;
   private String calleeNumber = null;
   private String startTime = null;
@@ -25,8 +24,6 @@ public class PhoneCall extends AbstractPhoneCall {
 
   /**
    * Constructor
-   * @param customer
-   *        Person whose phone bill we’re modeling
    * @param callerNumber
    *        Phone number of caller
    * @param calleeNumber
@@ -36,13 +33,12 @@ public class PhoneCall extends AbstractPhoneCall {
    * @param endTime
    *        Date and time call ended (24-hour time)
    */
-  public PhoneCall(String customer, String callerNumber, String calleeNumber, String startTime, String endTime){
+  public PhoneCall(String callerNumber, String calleeNumber, String startTime, String endTime){
     validateNumber(callerNumber);
     validateNumber(calleeNumber);
     validateTime(startTime);
     validateTime(endTime);
 
-    this.customer = customer;
     this.callerNumber = callerNumber;
     this.calleeNumber = calleeNumber;
     this.startTime = startTime;
@@ -80,7 +76,6 @@ public class PhoneCall extends AbstractPhoneCall {
     //No patterns match so through an IllegalArgumentException
     throw new IllegalArgumentException("Invalid time entered. Time must be in the format mm/dd/yyyy hh:mm");
   }
-
 
   @Override
   public String getCaller() {
