@@ -5,6 +5,12 @@ import edu.pdx.cs410J.AbstractPhoneCall;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.regex.Pattern;
 
 public class PhoneCall extends AbstractPhoneCall {
@@ -58,18 +64,25 @@ public class PhoneCall extends AbstractPhoneCall {
   private void validateTime(String time){
     if (! Pattern.matches("^[0-9]{1,2}/[0-9]{1,2}/[0-9]{4} [0-9]{1,2}:[0-9]{2}$", time)){
       throw new IllegalArgumentException("Invalid time entered. Time must be in the format mm/dd/yyyy hh:mm");
-  }
+    }
     else{
-      /*The date format code was derived from the Java Documentation found at
-          https://docs.oracle.com/javase/7/docs/api/java/text/DateFormat.html
+      /*
+        The code below was derived from reading through the documentation on DateTimeFormatter found at this URL:
+          https://docs.oracle.com/javase/10/docs/api/java/time/format/DateTimeFormatter.html
       */
-      DateFormat df = new SimpleDateFormat("mm/dd/yyyy hh:mm");
-      try{
-        df.parse(time);
+      // DateTime format patterns that are acceptable
+      String[] patterns = {"M/d/uuuu h:mm", "M/d/uuuu H:mm", "M/d/uuuu k:mm", "M/d/uuuu K:mm"};
+
+      //For each pattern, attempt to parse the date time string
+      for (String pattern : patterns){
+        try{
+          LocalDateTime.parse(time, DateTimeFormatter.ofPattern(pattern));
+          return; //Parse is successful, so the time string is valid
+        }
+        catch (DateTimeParseException e){ } //Try the next pattern
       }
-      catch (ParseException e){
-        throw new IllegalArgumentException("Invalid time entered. The format is correct but the values are incorrect.");
-      }
+      //No patterns match so through an IllegalArgumentException
+      throw new IllegalArgumentException("Invalid time entered. Time must be in the format mm/dd/yyyy hh:mm");
     }
   }
 
