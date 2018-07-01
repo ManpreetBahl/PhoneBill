@@ -112,4 +112,70 @@ public class PhoneCallTest {
   public void startTimeInvalidMonth(){
     new PhoneCall("123-456-7890", "132-456-7890", "15/5/2018 15:00", "6/30/2018 2:00");
   }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void startTimeYearMoreThanFourDigits(){
+    new PhoneCall("123-456-7890", "132-456-7890", "1/5/201867 15:00", "65/30/2018 2:00");
+  }
+
+  //End Time Tests
+  @Test(expected = IllegalArgumentException.class)
+  public void emptyEndTime(){
+    new PhoneCall("123-456-7890", "132-456-7890", "06/30/2018 2:00", "");
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void badEndTimeFormat(){
+    new PhoneCall("123-456-7890", "132-456-7890", "06/30/2018 2:00", "06-30-2018 2:00");
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void noTimeInEndTime(){
+    new PhoneCall("123-456-7890", "132-456-7890", "06/30/2018 2:00", "06/30/2018");
+  }
+
+  @Test
+  public void oneDigitMonthEndTime(){
+    new PhoneCall("123-456-7890", "132-456-7890", "06/30/2018 12:00", "6/30/2018 12:00");
+  }
+
+  @Test
+  public void oneDigitDayEndTime(){
+    new PhoneCall("123-456-7890", "132-456-7890", "12/5/2018 12:00", "6/5/2018 2:00");
+  }
+
+  @Test
+  public void oneDigitMonthDayEndTime(){
+    new PhoneCall("123-456-7890", "132-456-7890", "1/5/2018 12:00", "6/3/2018 2:00");
+  }
+
+  @Test
+  public void oneDigitMonthDayHourEndTime(){
+    new PhoneCall("123-456-7890", "132-456-7890", "1/5/2018 1:00", "6/3/2018 2:00");
+  }
+
+  @Test
+  public void militaryEndTime(){
+    new PhoneCall("123-456-7890", "132-456-7890", "1/5/2018 1:00", "6/30/2018 24:00");
+  }
+
+  @Test
+  public void endTimePast(){
+    new PhoneCall("123-456-7890", "132-456-7890", "1/5/0000 15:00", "6/30/0000 2:00");
+  }
+
+  @Test
+  public void startTimeEnd(){
+    new PhoneCall("123-456-7890", "132-456-7890", "5/26/2018 15:00", "6/30/9999 2:00");
+  }
+
+  @Test (expected = IllegalArgumentException.class)
+  public void endTimeInvalidMonth(){
+    new PhoneCall("123-456-7890", "132-456-7890", "1/5/2018 15:00", "65/30/2018 2:00");
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void endTimeYearMoreThanFourDigits(){
+    new PhoneCall("123-456-7890", "132-456-7890", "1/5/2018 15:00", "65/30/201802 2:00");
+  }
 }
