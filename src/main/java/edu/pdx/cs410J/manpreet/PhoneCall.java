@@ -62,29 +62,25 @@ public class PhoneCall extends AbstractPhoneCall {
   }
 
   private void validateTime(String time){
-    if (! Pattern.matches("^[0-9]{1,2}/[0-9]{1,2}/[0-9]{4} [0-9]{1,2}:[0-9]{2}$", time)){
-      throw new IllegalArgumentException("Invalid time entered. Time must be in the format mm/dd/yyyy hh:mm");
-    }
-    else{
-      /*
-        The code below was derived from reading through the documentation on DateTimeFormatter found at this URL:
-          https://docs.oracle.com/javase/10/docs/api/java/time/format/DateTimeFormatter.html
-      */
-      // DateTime format patterns that are acceptable
-      String[] patterns = {"M/d/uuuu h:mm", "M/d/uuuu H:mm", "M/d/uuuu k:mm", "M/d/uuuu K:mm"};
+    /*
+      The code below was derived from reading through the documentation on DateTimeFormatter found at this URL:
+        https://docs.oracle.com/javase/10/docs/api/java/time/format/DateTimeFormatter.html
+    */
+    // DateTime format patterns that are acceptable
+    String[] patterns = {"M/d/uuuu h:mm", "M/d/uuuu H:mm", "M/d/uuuu k:mm", "M/d/uuuu K:mm"};
 
-      //For each pattern, attempt to parse the date time string
-      for (String pattern : patterns){
-        try{
-          LocalDateTime.parse(time, DateTimeFormatter.ofPattern(pattern));
-          return; //Parse is successful, so the time string is valid
-        }
-        catch (DateTimeParseException e){ } //Try the next pattern
+    //For each pattern, attempt to parse the date time string
+    for (String pattern : patterns){
+      try{
+        LocalDateTime.parse(time, DateTimeFormatter.ofPattern(pattern));
+        return; //Parse is successful, so the time string is valid
       }
-      //No patterns match so through an IllegalArgumentException
-      throw new IllegalArgumentException("Invalid time entered. Time must be in the format mm/dd/yyyy hh:mm");
+      catch (DateTimeParseException e){ } //Try the next pattern
     }
+    //No patterns match so through an IllegalArgumentException
+    throw new IllegalArgumentException("Invalid time entered. Time must be in the format mm/dd/yyyy hh:mm");
   }
+
 
   @Override
   public String getCaller() {
