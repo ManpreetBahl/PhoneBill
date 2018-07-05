@@ -18,17 +18,13 @@ public class PhoneCall extends AbstractPhoneCall {
   private String endTime;
 
   /**
-   * Constructor
-   * @param callerNumber
-   *        Phone number of caller
-   * @param calleeNumber
-   *        Phone number of person who was called
-   * @param startTime
-   *        Date and time call began (24-hour time)
-   * @param endTime
-   *        Date and time call ended (24-hour time)
+   * Creates a new <code>PhoneCall</code>
+   * @param callerNumber Phone number of caller
+   * @param calleeNumber Phone number of person who was called
+   * @param startTime Date and time call began (24-hour time)
+   * @param endTime Date and time call ended (24-hour time)
    */
-  public PhoneCall(String callerNumber, String calleeNumber, String startTime, String endTime){
+  PhoneCall(String callerNumber, String calleeNumber, String startTime, String endTime){
     validateNumber(callerNumber);
     validateNumber(calleeNumber);
     validateDateTime(startTime);
@@ -42,9 +38,9 @@ public class PhoneCall extends AbstractPhoneCall {
 
   /**
    * Validates the phone number format. The regular expression was derived by reading the documentation found at:
-   *     https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html
-   * @param number
-   *        The phone number to validate
+   * https://docs.oracle.com/javase/10/docs/api/java/util/regex/Pattern.html
+   *
+   * @param number The phone number to validate
    */
   private void validateNumber(String number){
     if (! Pattern.matches("^[0-9]{3}-[0-9]{3}-[0-9]{4}$", number)){
@@ -55,9 +51,9 @@ public class PhoneCall extends AbstractPhoneCall {
   /**
    * Validates the datetime string. The code below was derived from reading through the documentation on
    * DateTimeFormatter found at this URL:
-   *        https://docs.oracle.com/javase/10/docs/api/java/time/format/DateTimeFormatter.html
-   * @param time
-   *        The datetime string to validate
+   * https://docs.oracle.com/javase/10/docs/api/java/time/format/DateTimeFormatter.html
+   *
+   * @param time The datetime string to validate
    */
   private void validateDateTime(String time){
     // DateTime format patterns that are acceptable
@@ -75,21 +71,41 @@ public class PhoneCall extends AbstractPhoneCall {
     throw new IllegalArgumentException("Invalid time entered. Time must be in the format mm/dd/yyyy hh:mm");
   }
 
+  /**
+   * Get the caller's number.
+   *
+   * @return The caller's number
+   */
   @Override
   public String getCaller() {
     return this.callerNumber;
   }
 
+  /**
+   * Get the callee's number.
+   *
+   * @return The callee's number
+   */
   @Override
   public String getCallee() {
     return this.calleeNumber;
   }
 
+  /**
+   * Get the start time of the phone call between the caller and callee.
+   *
+   * @return The start time, as a string, of the start time of the call
+   */
   @Override
   public String getStartTimeString() {
     return this.startTime;
   }
 
+  /**
+   * Get the end time of the phone call between the caller and callee.
+   *
+   * @return The end time, as a string, of the end time of the call
+   */
   @Override
   public String getEndTimeString() {
     return this.endTime;
