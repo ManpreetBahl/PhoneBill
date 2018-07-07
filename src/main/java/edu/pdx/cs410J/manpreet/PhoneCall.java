@@ -57,7 +57,7 @@ public class PhoneCall extends AbstractPhoneCall {
    */
   private void validateDateTime(String time){
     // DateTime format patterns that are acceptable
-    String[] patterns = {"M/d/uuuu h:mm", "M/d/uuuu H:mm", "M/d/uuuu k:mm", "M/d/uuuu K:mm"};
+    String[] patterns = {"M/d/uuuu H:mm", "M/d/uuuu k:mm"};
 
     //For each pattern, attempt to parse the date time string
     for (String pattern : patterns){

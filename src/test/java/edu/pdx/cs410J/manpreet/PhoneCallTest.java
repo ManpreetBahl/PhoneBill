@@ -118,6 +118,21 @@ public class PhoneCallTest {
     new PhoneCall("123-456-7890", "132-456-7890", "1/5/201867 15:00", "65/30/2018 2:00");
   }
 
+  @Test
+  public void startTimeSingleZero(){
+    new PhoneCall("123-456-7890", "132-456-7890", "1/5/2018 0:00", "5/30/2018 2:00");
+  }
+
+  @Test
+  public void startTimeDoubleZeroes(){
+    new PhoneCall("123-456-7890", "132-456-7890", "1/5/2018 00:00", "5/30/2018 2:00");
+  }
+
+  @Test
+  public void startTimeTwentyFourHour(){
+    new PhoneCall("123-456-7890", "132-456-7890", "1/5/2018 24:00", "5/30/2018 2:00");
+  }
+
   //End Time Tests
   @Test(expected = IllegalArgumentException.class)
   public void emptyEndTime(){
@@ -177,5 +192,20 @@ public class PhoneCallTest {
   @Test(expected = IllegalArgumentException.class)
   public void endTimeYearMoreThanFourDigits(){
     new PhoneCall("123-456-7890", "132-456-7890", "1/5/2018 15:00", "65/30/201802 2:00");
+  }
+
+  @Test
+  public void endTimeSingleZero(){
+    new PhoneCall("123-456-7890", "132-456-7890", "1/5/2018 2:00", "5/30/2018 0:00");
+  }
+
+  @Test
+  public void endTimeDoubleZeroes(){
+    new PhoneCall("123-456-7890", "132-456-7890", "1/5/2018 04:00", "5/30/2018 00:00");
+  }
+
+  @Test
+  public void endTimeTwentyFourHour(){
+    new PhoneCall("123-456-7890", "132-456-7890", "1/5/2018 23:00", "5/30/2018 24:00");
   }
 }
