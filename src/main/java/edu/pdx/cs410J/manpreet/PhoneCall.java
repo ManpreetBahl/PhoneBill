@@ -7,6 +7,11 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.regex.Pattern;
 
+/**
+ * This class contains information about a phone call. This includes the caller's and callee's
+ * phone number as well as the start and end time of the call. Validation of the phone numbers and
+ * date are performed in the constructor to ensure that they meet the required standard.
+ */
 public class PhoneCall extends AbstractPhoneCall {
   //Caller's phone number
   private String callerNumber;

@@ -5,7 +5,8 @@ import edu.pdx.cs410J.AbstractPhoneBill;
 import java.util.Arrays;
 
 /**
- * The main class for the CS410J Phone Bill Project
+ * The main class for the CS410J Phone Bill Project which handles the user interaction through the
+ * command line.
  */
 
 public class Project1 {

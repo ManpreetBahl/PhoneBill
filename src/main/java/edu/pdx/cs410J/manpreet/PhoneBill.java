@@ -5,6 +5,11 @@ import edu.pdx.cs410J.AbstractPhoneBill;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * This class describes a phone bill for a customer. It contains the name of the customer and the
+ * list of phone calls made by that customer. Each phone call is a <code>PhoneCall</code> object
+ * as described in the PhoneCall class.
+ */
 public class PhoneBill extends AbstractPhoneBill<PhoneCall> {
     //Name of customer
     private String customer;
