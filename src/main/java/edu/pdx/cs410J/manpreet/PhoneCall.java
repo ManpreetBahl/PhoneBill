@@ -8,13 +8,16 @@ import java.time.format.DateTimeParseException;
 import java.util.regex.Pattern;
 
 public class PhoneCall extends AbstractPhoneCall {
-
-  /**
-   * Class fields
-   */
+  //Caller's phone number
   private String callerNumber;
+
+  //Callee's phone number
   private String calleeNumber;
+
+  //Start time of the call
   private String startTime;
+
+  //End time of the call
   private String endTime;
 
   /**

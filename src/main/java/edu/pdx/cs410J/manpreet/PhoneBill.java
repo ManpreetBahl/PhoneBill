@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class PhoneBill extends AbstractPhoneBill<PhoneCall> {
-    /**
-     * Fields
-     */
+    //Name of customer
     private String customer;
+
+    //Collection of PhoneCalls by the customer
     private Collection<PhoneCall> calls = new ArrayList<>();
 
     /**
