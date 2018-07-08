@@ -28,7 +28,9 @@ public class Project1 {
     String customer = null;
     String callerNum = null;
     String calleeNum = null;
+    String startDate = null;
     String startTime = null;
+    String endDate = null;
     String endTime = null;
     boolean toPrint = false;
     int startIndex = 0;
@@ -59,10 +61,14 @@ public class Project1 {
         callerNum = args[i];
       } else if (calleeNum == null){
         calleeNum = args[i];
-      } else if (startTime == null){
-        startTime = args[i] + " " + args[++i];
+      } else if (startDate == null) {
+        startDate = args[i];
+      } else if (startTime == null) {
+        startTime = args[i];
+      } else if (endDate == null){
+        endDate = args[i];
       } else if (endTime == null) {
-        endTime = args[i] + " " + args[++i];
+        endTime = args[i];
       } else{
         errorAndExit("Too many arguments entered");
       }
@@ -72,23 +78,31 @@ public class Project1 {
       errorAndExit("Missing customer name");
     } else if (callerNum == null){
       errorAndExit("Missing caller phone number");
-    } else if (calleeNum == null){
+    } else if (calleeNum == null) {
       errorAndExit("Missing callee phone number");
-    } else if (startTime == null){
+    } else if (startDate == null) {
+      errorAndExit("Missing start date of the phone call");
+    } else if (startTime == null) {
       errorAndExit("Missing start time of the phone call");
+    } else if (endDate == null){
+      errorAndExit("Missing end date of the phone call");
     } else if (endTime == null) {
       errorAndExit("Missing end time of the phone call");
     }
 
     try{
-      toAdd = new PhoneCall(callerNum, calleeNum, startTime,endTime);
+      toAdd = new PhoneCall(callerNum, calleeNum, startDate + " " + startTime, endDate + " " + endTime);
       bill = new PhoneBill(customer);
       bill.addPhoneCall(toAdd);
 
       if(toPrint){
-        System.out.println(toAdd.toString());
+        System.out.println(String.join(
+            System.getProperty("line.separator"),
+            "Customer: " + bill.getCustomer(),
+            toAdd.toString()
+            )
+        );
       }
-
       System.exit(0);
     }catch (IllegalArgumentException ie){
       errorAndExit(ie.getMessage());
