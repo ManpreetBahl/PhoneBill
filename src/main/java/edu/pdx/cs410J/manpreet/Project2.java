@@ -15,14 +15,12 @@ public class Project2 {
       System.getProperty("line.separator"),
       "Assignment: Project 2",
       "Author: Manpreet Bahl",
-      "This project implements the fundamental design of the PhoneBill application.",
-      "Specifically, this project implements the PhoneCall class which contains",
-      "information about one call: caller phone number, callee phone number, start",
-      "and end time of the phone call.",
-      "The PhoneBill class contains all the PhoneCalls for a particular customer to",
-      "billed. By designing and testing these two fundamental classes, we can be sure",
-      "these will work as intended even if the way they are used is different from",
-      "project to project.",
+      "This project builds upon Project 1 by storing PhoneBill data to text files.",
+      "There are two new classes added: TextParser and TextDumper. TextParser parses a",
+      "text file and creates a PhoneBill object from it. TextDumper dumps the contents of",
+      "a PhoneBill object to a text file specified by the filepath.",
+      "The Project2 class builds upon Project1 class by adding the -textFile option command",
+      "to the command line parsing",
       usage()
   );
 
@@ -63,7 +61,7 @@ public class Project2 {
     PhoneCall toAdd;
 
     //The PhoneBill object
-    PhoneBill bill;
+    PhoneBill bill = null;
 
     //File Path
     String filepath = null;

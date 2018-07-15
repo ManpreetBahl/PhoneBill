@@ -40,7 +40,6 @@ public class TextParser implements PhoneBillParser {
     }catch (SecurityException se){
       throw new SecurityException("Unable to read text file! Please delegate read and write permissions to this application");
     }
-
   }
 
   /**
@@ -50,9 +49,11 @@ public class TextParser implements PhoneBillParser {
    * by the <code>PhoneCall</code> class
    * @return bill The <code>PhoneBill</code> object created from the contents of the text file
    * @throws ParserException
+   * @throws IllegalArgumentException
+   * @throws ArrayIndexOutOfBoundsException
    */
   @Override
-  public PhoneBill parse() throws ParserException {
+  public PhoneBill parse() throws ParserException, IllegalArgumentException, ArrayIndexOutOfBoundsException {
     PhoneBill bill = null;
     PhoneCall call;
     try{
