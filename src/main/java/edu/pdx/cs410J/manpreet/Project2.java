@@ -164,6 +164,10 @@ public class Project2 {
           bill = new PhoneBill(customer);
         }
 
+        if(!bill.getCustomer().equals(customer)){
+         throw new IllegalArgumentException("The file specified does not match your name!");
+        }
+
         //Add the newly created PhoneCall object
         bill.addPhoneCall(toAdd);
 

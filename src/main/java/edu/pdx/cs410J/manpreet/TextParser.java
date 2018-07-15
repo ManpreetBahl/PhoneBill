@@ -34,8 +34,14 @@ public class TextParser implements PhoneBillParser {
     PhoneBill bill = null;
     PhoneCall call;
     try{
+      if(this.toParse.exists() && this.toParse.length() == 0){
+        throw new ParserException("Empty file detected!");
+      }
       BufferedReader bw = new BufferedReader(new FileReader(this.toParse));
       String customer = bw.readLine();
+      if (customer == null){
+        throw new ParserException("No customer name detected!");
+      }
       bill = new PhoneBill(customer);
 
       String callsInText;
