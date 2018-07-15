@@ -53,6 +53,7 @@ public class Project2IT extends InvokeMainTestCase {
               "  startTime              Date and time call began (24-hour time)",
               "  endTime                Date and time call ended (24-hour time)",
               "options are (options may appear in any order):",
+              "  -textFile file         Where to read/write the phone bill",
               "  -print                 Prints a description of the new phone call",
               "  -README                Prints a README for this project and exits",
               "Date and time should be in the format: mm/dd/yyyy hh:mm"
@@ -165,6 +166,7 @@ public class Project2IT extends InvokeMainTestCase {
         "  startTime              Date and time call began (24-hour time)",
         "  endTime                Date and time call ended (24-hour time)",
         "options are (options may appear in any order):",
+        "  -textFile file         Where to read/write the phone bill",
         "  -print                 Prints a description of the new phone call",
         "  -README                Prints a README for this project and exits",
         "Date and time should be in the format: mm/dd/yyyy hh:mm"
@@ -257,6 +259,13 @@ public class Project2IT extends InvokeMainTestCase {
     assertThat(result.getTextWrittenToStandardError(), containsString("Unable to create a file!"));
     assertThat(result.getExitCode(),equalTo(1));
   }
+
+  public void testMalformedFile(){
+    MainMethodResult result = invokeMain("-print", "-textFile", "Malformed.txt", "MonkeyKing", "123-456-7891", "153-234-2199", "1/6/2008", "23:00", "2/3/2402", "4:00");
+    assertThat(result.getTextWrittenToStandardError(), containsString("Invalid phone number entered."));
+    assertThat(result.getExitCode(),equalTo(1));
+  }
+
   @Test
   public void testFileProject2(){
     testNoTextFilePath();
@@ -266,5 +275,6 @@ public class Project2IT extends InvokeMainTestCase {
     testMismatchCustomerName();
     testOnlyCustNameInFile();
     testRelativePath();
+    testMalformedFile();
   }
 }
