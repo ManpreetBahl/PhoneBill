@@ -157,13 +157,15 @@ public class Project2 {
       toAdd = new PhoneCall(callerNum, calleeNum, startDate + " " + startTime, endDate + " " + endTime);
 
       if(toText){
-       try{
+        //Attempt to parse the file specified to get customer data
+        try{
           TextParser tp = new TextParser(filepath);
           bill = tp.parse();
-        }catch(IOException ie){
+        }catch(IOException ie){ //There's no file to parse, so create a new PhoneBill
           bill = new PhoneBill(customer);
         }
 
+        //Check to make sure the customer name matches the text file specified
         if(!bill.getCustomer().equals(customer)){
          throw new IllegalArgumentException("The file specified does not match your name!");
         }
@@ -171,6 +173,7 @@ public class Project2 {
         //Add the newly created PhoneCall object
         bill.addPhoneCall(toAdd);
 
+        //Dump the PhoneBill contents to the file
         TextDumper td = new TextDumper(filepath);
         td.dump(bill);
       }
@@ -194,10 +197,6 @@ public class Project2 {
       //Exit gracefully with status code of 0
       System.exit(0);
     }catch (IllegalArgumentException | IOException | ParserException | ArrayIndexOutOfBoundsException e){
-      /*The PhoneCall validator functions throw IllegalArgumentException if they catch an error
-        with the format and values of the phone numbers and dates. In that case, this will catch
-        that exception, print the error message and exit with a status code of 1
-       */
       errorAndExit(e.getMessage());
     }
   }
