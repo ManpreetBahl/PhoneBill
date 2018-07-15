@@ -1,7 +1,6 @@
 package edu.pdx.cs410J.manpreet;
 
 import edu.pdx.cs410J.ParserException;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -11,7 +10,7 @@ public class Project2 {
    * System.getProperty was found here:
    *       https://stackoverflow.com/questions/878573/java-multiline-string
    */
-  static final String README = String.join(
+  static private final String README = String.join(
       System.getProperty("line.separator"),
       "Assignment: Project 2",
       "Author: Manpreet Bahl",
@@ -61,7 +60,7 @@ public class Project2 {
     PhoneCall toAdd;
 
     //The PhoneBill object
-    PhoneBill bill = null;
+    PhoneBill bill;
 
     //File Path
     String filepath = null;

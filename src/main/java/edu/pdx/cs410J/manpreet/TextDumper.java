@@ -12,15 +12,15 @@ import java.io.*;
  */
 public class TextDumper implements PhoneBillDumper {
   //File to dump at
-  File toDump;
+  private File toDump;
 
   /**
    * This is the constructor for TextDumper which takes a filepath and performs some checks to
    * make sure it exists and whether it's valid.
    * @param filepath The path where the file resides
-   * @throws NullPointerException
-   * @throws IOException
-   * @throws SecurityException
+   * @throws NullPointerException The file path is null
+   * @throws IOException There was an error trying to create the text file
+   * @throws SecurityException The application doesn't have access to work with the text file
    */
   TextDumper(String filepath) throws NullPointerException, IOException, SecurityException {
     /*Try to create the File object based on path. NullPointerException is thrown when the filepath
@@ -52,7 +52,7 @@ public class TextDumper implements PhoneBillDumper {
    * This method will overwrite the contents of the file with the contents of <code>PhoneBill</code>
    * object
    * @param bill The <code>PhoneBill</code> object to write to file
-   * @throws IOException
+   * @throws IOException There was an error trying to write the contents to the text file
    */
   @Override
   public void dump(AbstractPhoneBill bill)throws IOException{

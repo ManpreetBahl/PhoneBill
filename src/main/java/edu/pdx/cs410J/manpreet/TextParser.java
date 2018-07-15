@@ -10,15 +10,15 @@ import java.io.*;
  */
 public class TextParser implements PhoneBillParser {
   //File to parse
-  File toParse;
+  private File toParse;
 
   /**
    * This is the constructor for TextParser which takes a filepath and performs some checks to
    * make sure it exists and whether it's valid.
    * @param filepath The path where the file resides
-   * @throws NullPointerException
-   * @throws IOException
-   * @throws SecurityException
+   * @throws NullPointerException The file path is null
+   * @throws IOException There was an error trying to read the text file
+   * @throws SecurityException The application doesn't have access to work with the text file
    */
   TextParser(String filepath) throws NullPointerException, IOException, SecurityException{
     /*Try to create the File object based on path. NullPointerException is thrown when the filepath
@@ -48,9 +48,9 @@ public class TextParser implements PhoneBillParser {
    * a ParserException, one checks for missing customer name, and the phone call data is validated
    * by the <code>PhoneCall</code> class
    * @return bill The <code>PhoneBill</code> object created from the contents of the text file
-   * @throws ParserException
-   * @throws IllegalArgumentException
-   * @throws ArrayIndexOutOfBoundsException
+   * @throws ParserException The file exists but is empty or the customer name is missing
+   * @throws IllegalArgumentException PhoneCall has invalid data value and/or format
+   * @throws ArrayIndexOutOfBoundsException There are missing phone call data in the text file
    */
   @Override
   public PhoneBill parse() throws ParserException, IllegalArgumentException, ArrayIndexOutOfBoundsException {
