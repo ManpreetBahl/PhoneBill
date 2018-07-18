@@ -235,7 +235,7 @@ public class Project2IT extends InvokeMainTestCase {
 
   public void testMismatchCustomerName(){
     MainMethodResult result = invokeMain("-print", "-textFile", "MonkeyKing.txt", "MonkeyBoy", "123-456-7891", "153-234-2199", "1/6/2008", "23:00", "2/3/2402", "4:00");
-    assertThat(result.getTextWrittenToStandardError(), containsString("The file specified does not match your name"));
+    assertThat(result.getTextWrittenToStandardError(), containsString("The name in the specified file does not match your name!"));
     assertThat(result.getExitCode(),equalTo(1));
   }
 

@@ -164,7 +164,7 @@ public class Project2 {
 
         //Check to make sure the customer name matches the text file specified
         if(!bill.getCustomer().equals(customer)){
-         throw new IllegalArgumentException("The file specified does not match your name!");
+         throw new IllegalArgumentException("The name in the specified file does not match your name!");
         }
 
         //Add the newly created PhoneCall object
