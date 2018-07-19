@@ -252,8 +252,11 @@ public class Project2IT extends InvokeMainTestCase {
 
   public void testRelativePath(){
     MainMethodResult result = invokeMain("-print", "-textFile", "hello/there/test.txt", "MonkeyQueen", "123-456-7891", "153-234-2199", "1/6/2008", "23:00", "2/3/2402", "4:00");
-    assertThat(result.getTextWrittenToStandardError(), containsString("Unable to create a file!"));
-    assertThat(result.getExitCode(),equalTo(1));
+    assertThat(result.getTextWrittenToStandardOut(), containsString(String.join(
+        System.getProperty("line.separator"),
+        "Customer: MonkeyQueen",
+        "Phone call from 123-456-7891 to 153-234-2199 from 1/6/2008 23:00 to 2/3/2402 4:00")));
+    assertThat(result.getExitCode(),equalTo(0));
   }
 
   public void testMalformedFile(){
@@ -262,6 +265,14 @@ public class Project2IT extends InvokeMainTestCase {
     assertThat(result.getExitCode(),equalTo(1));
   }
 
+  public void testRelativePath1(){
+    MainMethodResult result = invokeMain("-textFile", "manpreet/test.txt", "-print", "MonkeyQueen", "123-456-7891", "153-234-2199", "1/6/2008", "23:00", "2/3/2402", "4:00");
+    assertThat(result.getTextWrittenToStandardOut(), containsString(String.join(
+        System.getProperty("line.separator"),
+        "Customer: MonkeyQueen",
+        "Phone call from 123-456-7891 to 153-234-2199 from 1/6/2008 23:00 to 2/3/2402 4:00")));
+    assertThat(result.getExitCode(),equalTo(0));
+  }
   @Test
   public void testFileProject2(){
     testNoTextFilePath();
@@ -272,5 +283,6 @@ public class Project2IT extends InvokeMainTestCase {
     testOnlyCustNameInFile();
     testRelativePath();
     testMalformedFile();
+    testRelativePath1();
   }
 }

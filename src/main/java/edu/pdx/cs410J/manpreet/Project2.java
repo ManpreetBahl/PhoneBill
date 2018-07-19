@@ -95,7 +95,7 @@ public class Project2 {
     if (containsOption(args, "-textFile")){
       try{
         startIndex += 2;
-        filepath = args[startIndex -1];
+        filepath = args[Arrays.asList(args).indexOf("-textFile") + 1];
         toText = true;
       }catch (ArrayIndexOutOfBoundsException ae){
         errorAndExit("Missing file path");

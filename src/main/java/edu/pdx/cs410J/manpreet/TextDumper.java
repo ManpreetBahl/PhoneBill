@@ -38,6 +38,10 @@ public class TextDumper implements PhoneBillDumper {
      */
     try{
       if(!this.toDump.exists()){
+        File parent = this.toDump.getParentFile();
+        if (parent != null){
+          parent.mkdirs();
+        }
         this.toDump.createNewFile();
       }
     }catch (IOException ie){
@@ -63,7 +67,7 @@ public class TextDumper implements PhoneBillDumper {
         bw.newLine();
         for(Object call: bill.getPhoneCalls()){
           AbstractPhoneCall c = (AbstractPhoneCall)call;
-          bw.write(c.getCallee() + "," + c.getCaller() + "," + c.getStartTimeString() + "," + c.getEndTimeString());
+          bw.write(c.getCaller() + "," + c.getCallee() + "," + c.getStartTimeString() + "," + c.getEndTimeString());
           bw.newLine();
         }
       }
