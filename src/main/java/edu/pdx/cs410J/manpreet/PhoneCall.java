@@ -2,6 +2,8 @@ package edu.pdx.cs410J.manpreet;
 
 import edu.pdx.cs410J.AbstractPhoneCall;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -20,28 +22,56 @@ public class PhoneCall extends AbstractPhoneCall {
   private String calleeNumber;
 
   //Start time of the call
-  private String startTime;
+  private String startTimeString;
 
   //End time of the call
-  private String endTime;
+  private String endTimeString;
+
+  //Start time of the call- Date Object
+  private Date startTime;
+
+  //End time of the call- Date Object
+  private Date endTime;
 
   /**
-   * Creates a new <code>PhoneCall</code>
+   * Creates a new <code>PhoneCall</code>. The startTime and endTime Date objects need to be
+   * verified beforehand before calling this constructor.
    * @param callerNumber Phone number of caller
    * @param calleeNumber Phone number of person who was called
-   * @param startTime Date and time call began (24-hour time)
-   * @param endTime Date and time call ended (24-hour time)
+   * @param startTime Date time when call began (am/pm)
+   * @param endTime Date time when call ended (am/pm)
    */
-  PhoneCall(String callerNumber, String calleeNumber, String startTime, String endTime){
+  PhoneCall(String callerNumber, String calleeNumber, Date startTime, Date endTime){
     validateNumber(callerNumber);
     validateNumber(calleeNumber);
-    validateDateTime(startTime);
-    validateDateTime(endTime);
 
     this.callerNumber = callerNumber;
     this.calleeNumber = calleeNumber;
     this.startTime = startTime;
     this.endTime = endTime;
+
+    SimpleDateFormat sdf = new SimpleDateFormat("M/d/yyyy h:mm a");
+    this.startTimeString = sdf.format(startTime);
+    this.endTimeString = sdf.format(endTime);
+  }
+
+  /**
+   * Creates a new <code>PhoneCall</code>
+   * @param callerNumber Phone number of caller
+   * @param calleeNumber Phone number of person who was called
+   * @param startTimeString Date and time call began (24-hour time)
+   * @param endTimeString Date and time call ended (24-hour time)
+   */
+  PhoneCall(String callerNumber, String calleeNumber, String startTimeString, String endTimeString){
+    validateNumber(callerNumber);
+    validateNumber(calleeNumber);
+    validateDateTime(startTimeString);
+    validateDateTime(endTimeString);
+
+    this.callerNumber = callerNumber;
+    this.calleeNumber = calleeNumber;
+    this.startTimeString = startTimeString;
+    this.endTimeString = endTimeString;
   }
 
   /**
@@ -106,7 +136,7 @@ public class PhoneCall extends AbstractPhoneCall {
    */
   @Override
   public String getStartTimeString() {
-    return this.startTime;
+    return this.startTimeString;
   }
 
   /**
@@ -116,6 +146,24 @@ public class PhoneCall extends AbstractPhoneCall {
    */
   @Override
   public String getEndTimeString() {
+    return this.endTimeString;
+  }
+
+  /**
+   * Get the start time date object of the phone call
+   * @return The date object containing the start time information
+   */
+  @Override
+  public Date getStartTime(){
+    return this.startTime;
+  }
+
+  /**
+   * Get the end time date object of the phone call
+   * @return The date object containing the end time information
+   */
+  @Override
+  public Date getEndTime(){
     return this.endTime;
   }
 }

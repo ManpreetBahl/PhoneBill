@@ -2,7 +2,10 @@ package edu.pdx.cs410J.manpreet;
 
 import edu.pdx.cs410J.ParserException;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 
 public class Project3 {
   /**
@@ -12,14 +15,16 @@ public class Project3 {
    */
   static private final String README = String.join(
       System.getProperty("line.separator"),
-      "Assignment: Project 2",
+      "Assignment: Project 3",
       "Author: Manpreet Bahl",
-      "This project builds upon Project 1 by storing PhoneBill data to text files.",
-      "There are two new classes added: TextParser and TextDumper. TextParser parses a",
-      "text file and creates a PhoneBill object from it. TextDumper dumps the contents of",
-      "a PhoneBill object to a text file specified by the filepath.",
-      "The Project2 class builds upon Project1 class by adding the -textFile option command",
-      "to the command line parsing",
+      "This project builds upon Project 2 with several changes",
+      "along with newly added features. First, the PhoneCall class",
+      "now handles the start and end times of the calls as Date",
+      "objects instead of strings. The PhoneBill class now sorts",
+      "PhoneCalls by the start time of the call using the caller",
+      "phone number as tiebreakers.",
+      "A new feature called PrettyPrint was added that creates a nicely",
+      "formatted textual presentation of the phone calls in a phone bill.",
       usage()
   );
 
@@ -44,11 +49,17 @@ public class Project3 {
     //The time when the call began
     String startTime = null;
 
+    //Start time AM or PM
+    String startMarker = null;
+
     //The date when the call ended
     String endDate = null;
 
     //The time when the call ended
     String endTime = null;
+
+    //End time AM or PM marker
+    String endMarker = null;
 
     //Should the phone call to add be displayed?
     boolean toPrint = false;
@@ -67,6 +78,15 @@ public class Project3 {
 
     //Should the phone call be added to a text file?
     boolean toText = false;
+
+    //SimpleDateFormatter parser
+    SimpleDateFormat sdf = new SimpleDateFormat("M/d/yyyy h:mm a");
+
+    //Start time Date object
+    Date start = null;
+
+    //End time Date object
+    Date end = null;
 
     //Make sure there are command line arguments
     if(args.length == 0){
@@ -118,10 +138,14 @@ public class Project3 {
         startDate = args[i];
       } else if (startTime == null) {
         startTime = args[i];
+      } else if (startMarker == null){
+        startMarker = args[i];
       } else if (endDate == null){
         endDate = args[i];
       } else if (endTime == null) {
         endTime = args[i];
+      } else if (endMarker == null) {
+        endMarker = args[i];
       } else{
         errorAndExit("Too many arguments entered");
       }
@@ -141,18 +165,34 @@ public class Project3 {
       errorAndExit("Missing start date of the phone call");
     } else if (startTime == null) {
       errorAndExit("Missing start time of the phone call");
+    } else if (startMarker == null) {
+      errorAndExit("Missing am/pm marker for start time of phone call");
     } else if (endDate == null){
       errorAndExit("Missing end date of the phone call");
     } else if (endTime == null) {
       errorAndExit("Missing end time of the phone call");
+    } else if (endMarker == null) {
+      errorAndExit("Missing am/pm marker for end time of phone call");
     } else if (filepath == null && toText) {
       errorAndExit("Missing file path");
     }
 
     try{
-      //Attempt to create a new PhoneCall. Validation of the parameters will be done here
-      toAdd = new PhoneCall(callerNum, calleeNum, startDate + " " + startTime, endDate + " " + endTime);
+      //Attempt to parse Date object from the given time inputs provided by the user
+      try{
+        start = sdf.parse(startDate + " " + startTime + " " + startMarker);
+      } catch (ParseException pe){
+        errorAndExit("Invalid start time! Please use AM/PM Date time format");
+      }
 
+      try{
+        end = sdf.parse(endDate + " " + endTime + " " + endMarker);
+      } catch (ParseException pe){
+        errorAndExit("Invalid end time! Please use AM/PM Date time format");
+      }
+
+      //Attempt to create a new PhoneCall. Validation of the callerNum and calleeNum will be handled in constructor
+      toAdd = new PhoneCall(callerNum, calleeNum, start, end);
       if(toText){
         //Attempt to parse the file specified to get customer data
         try{
@@ -208,18 +248,19 @@ public class Project3 {
   private static String usage(){
     return String.join(
         System.getProperty("line.separator"),
-        "usage: java edu.pdx.cs410J.manpreet.Project2 [options] <args>",
+        "usage: java edu.pdx.cs410J.manpreet.Project3 [options] <args>",
         "args are (in this order):",
         "  customer               Person whose phone bill we’re modeling",
         "  callerNumber           Phone number of caller",
         "  calleeNumber           Phone number of person who was called",
-        "  startTime              Date and time call began (24-hour time)",
-        "  endTime                Date and time call ended (24-hour time)",
+        "  startTime              Date and time (am/pm) call began",
+        "  endTime                Date and time (am/pm) call ended",
         "options are (options may appear in any order):",
+        "  -pretty file           Pretty print the phone bill to a text file",
+        "                         or standard out (file -).",
         "  -textFile file         Where to read/write the phone bill",
         "  -print                 Prints a description of the new phone call",
-        "  -README                Prints a README for this project and exits",
-        "Date and time should be in the format: mm/dd/yyyy hh:mm"
+        "  -README                Prints a README for this project and exits"
     );
   }
 
