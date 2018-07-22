@@ -3,7 +3,9 @@ package edu.pdx.cs410J.manpreet;
 import edu.pdx.cs410J.AbstractPhoneBill;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * This class describes a phone bill for a customer. It contains the name of the customer and the
@@ -15,7 +17,7 @@ public class PhoneBill extends AbstractPhoneBill<PhoneCall> {
     private String customer;
 
     //Collection of PhoneCalls by the customer
-    private Collection<PhoneCall> calls = new ArrayList<>();
+    private List<PhoneCall> calls = new ArrayList<>();
 
     /**
      * Creates a new <code>PhoneBill</code>.
@@ -44,6 +46,7 @@ public class PhoneBill extends AbstractPhoneBill<PhoneCall> {
     @Override
     public void addPhoneCall(PhoneCall call) {
         this.calls.add(call);
+        Collections.sort(this.calls);
     }
 
     /**

@@ -2,6 +2,8 @@ package edu.pdx.cs410J.manpreet;
 
 import edu.pdx.cs410J.AbstractPhoneCall;
 
+import edu.pdx.cs410J.ParserException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.time.LocalDateTime;
@@ -14,7 +16,7 @@ import java.util.regex.Pattern;
  * phone number as well as the start and end time of the call. Validation of the phone numbers and
  * date are performed in the constructor to ensure that they meet the required standard.
  */
-public class PhoneCall extends AbstractPhoneCall {
+public class PhoneCall extends AbstractPhoneCall implements Comparable<PhoneCall>{
   //Caller's phone number
   private String callerNumber;
 
@@ -33,6 +35,9 @@ public class PhoneCall extends AbstractPhoneCall {
   //End time of the call- Date Object
   private Date endTime;
 
+  //Date formatter
+  private SimpleDateFormat sdf = new SimpleDateFormat("M/d/yyyy h:mm a");
+
   /**
    * Creates a new <code>PhoneCall</code>. The startTime and endTime Date objects need to be
    * verified beforehand before calling this constructor.
@@ -50,7 +55,7 @@ public class PhoneCall extends AbstractPhoneCall {
     this.startTime = startTime;
     this.endTime = endTime;
 
-    SimpleDateFormat sdf = new SimpleDateFormat("M/d/yyyy h:mm a");
+    //SimpleDateFormat sdf = new SimpleDateFormat("M/d/yyyy h:mm a");
     this.startTimeString = sdf.format(startTime);
     this.endTimeString = sdf.format(endTime);
   }
@@ -72,6 +77,12 @@ public class PhoneCall extends AbstractPhoneCall {
     this.calleeNumber = calleeNumber;
     this.startTimeString = startTimeString;
     this.endTimeString = endTimeString;
+    try{
+      this.startTime = sdf.parse(this.startTimeString);
+      this.endTime = sdf.parse(this.endTimeString);
+    }catch (ParseException pe){
+      throw new IllegalArgumentException("Can't parse the time string due to bad format");
+    }
   }
 
   /**
@@ -95,7 +106,7 @@ public class PhoneCall extends AbstractPhoneCall {
    */
   private void validateDateTime(String time){
     // DateTime format patterns that are acceptable
-    String[] patterns = {"M/d/uuuu H:mm", "M/d/uuuu k:mm"};
+    String[] patterns = {"M/d/uuuu H:mm", "M/d/uuuu k:mm", "M/d/uuuu h:mm a"};
 
     //For each pattern, attempt to parse the date time string
     for (String pattern : patterns){
@@ -165,5 +176,20 @@ public class PhoneCall extends AbstractPhoneCall {
   @Override
   public Date getEndTime(){
     return this.endTime;
+  }
+
+  @Override
+  public int compareTo(PhoneCall other){
+    if (this.startTime.before(other.getStartTime())) {
+      return -1;
+    } else if (this.startTime.after(other.getStartTime())) {
+      return 1;
+    } else{
+      int callerPhone1 = Integer.parseInt(this.callerNumber.replace("-", ""));
+      int callerPhone2 = Integer.parseInt(other.getCaller().replace("-", ""));
+
+      return Integer.compare(callerPhone1,callerPhone2);
+    }
+
   }
 }

@@ -218,7 +218,7 @@ public class Project3IT extends InvokeMainTestCase {
     );
   }
 
-  /*
+
   public void testNoTextFilePath(){
     MainMethodResult result = invokeMain("-textFile");
     assertThat(result.getExitCode(), equalTo(1));
@@ -227,11 +227,11 @@ public class Project3IT extends InvokeMainTestCase {
 
 
   public void testFullCommandArgsWithTextFile(){
-    MainMethodResult result = invokeMain("-print", "-textFile", "MonkeyKing.txt", "MonkeyKing", "123-456-7891", "153-234-2199", "1/6/2008", "23:00", "2/3/2402", "4:00");
+    MainMethodResult result = invokeMain("-print", "-textFile", "MonkeyKing.txt", "MonkeyKing", "123-456-7891", "153-234-2199", "1/6/2008", "3:00", "am", "2/3/2402", "4:00", "pm");
     assertThat(result.getTextWrittenToStandardOut(), containsString(String.join(
         System.getProperty("line.separator"),
         "Customer: MonkeyKing",
-        "Phone call from 123-456-7891 to 153-234-2199 from 1/6/2008 23:00 to 2/3/2402 4:00"
+        "Phone call from 123-456-7891 to 153-234-2199 from 1/6/2008 3:00 AM to 2/3/2402 4:00 PM"
         ))
     );
     assertThat(result.getExitCode(),equalTo(0));
@@ -239,11 +239,11 @@ public class Project3IT extends InvokeMainTestCase {
 
 
   public void testTextParser(){
-    MainMethodResult result = invokeMain("-print", "-textFile", "MonkeyKing.txt", "MonkeyKing", "123-456-7891", "153-234-2199", "1/6/2008", "23:00", "2/3/2402", "4:00");
+    MainMethodResult result = invokeMain("-print", "-textFile", "MonkeyKing.txt", "MonkeyKing", "123-456-7891", "153-234-2199", "1/6/2008", "2:00", "pm", "2/3/2402", "4:00", "pm");
     assertThat(result.getTextWrittenToStandardOut(), containsString(String.join(
         System.getProperty("line.separator"),
         "Customer: MonkeyKing",
-        "Phone call from 123-456-7891 to 153-234-2199 from 1/6/2008 23:00 to 2/3/2402 4:00"
+        "Phone call from 123-456-7891 to 153-234-2199 from 1/6/2008 2:00 PM to 2/3/2402 4:00 PM"
         ))
     );
     assertThat(result.getExitCode(),equalTo(0));
@@ -251,50 +251,50 @@ public class Project3IT extends InvokeMainTestCase {
 
 
   public void testFileExistsButEmpty(){
-    MainMethodResult result = invokeMain("-print", "-textFile", "ExistsButEmpty.txt", "MonkeyKing", "123-456-7891", "153-234-2199", "1/6/2008", "23:00", "2/3/2402", "4:00");
+    MainMethodResult result = invokeMain("-print", "-textFile", "ExistsButEmpty.txt", "MonkeyKing", "123-456-7891", "153-234-2199", "1/6/2008", "6:00", "am", "2/3/2402", "5:00", "pm");
     assertThat(result.getTextWrittenToStandardError(), containsString("Empty file detected!"));
     assertThat(result.getExitCode(),equalTo(1));
   }
 
 
   public void testMismatchCustomerName(){
-    MainMethodResult result = invokeMain("-print", "-textFile", "MonkeyKing.txt", "MonkeyBoy", "123-456-7891", "153-234-2199", "1/6/2008", "23:00", "2/3/2402", "4:00");
+    MainMethodResult result = invokeMain("-print", "-textFile", "MonkeyKing.txt", "MonkeyBoy", "123-456-7891", "153-234-2199", "1/6/2008", "3:00", "am", "2/3/2402", "4:00", "pm");
     assertThat(result.getTextWrittenToStandardError(), containsString("The name in the specified file does not match your name!"));
     assertThat(result.getExitCode(),equalTo(1));
   }
 
 
   public void testOnlyCustNameInFile(){
-    MainMethodResult result = invokeMain("-print", "-textFile", "OnlyHasCustomerName.txt", "MonkeyQueen", "123-456-7891", "153-234-2199", "1/6/2008", "23:00", "2/3/2402", "4:00");
+    MainMethodResult result = invokeMain("-print", "-textFile", "OnlyHasCustomerName.txt", "MonkeyQueen", "123-456-7891", "153-234-2199", "1/6/2008", "12:00", "PM", "2/3/2402", "4:00", "AM");
     assertThat(result.getTextWrittenToStandardOut(), containsString(String.join(
         System.getProperty("line.separator"),
         "Customer: MonkeyQueen",
-        "Phone call from 123-456-7891 to 153-234-2199 from 1/6/2008 23:00 to 2/3/2402 4:00"
+        "Phone call from 123-456-7891 to 153-234-2199 from 1/6/2008 12:00 PM to 2/3/2402 4:00 AM"
     )));
     assertThat(result.getExitCode(),equalTo(0));
   }
 
   public void testRelativePath(){
-    MainMethodResult result = invokeMain("-print", "-textFile", "hello/there/test.txt", "MonkeyQueen", "123-456-7891", "153-234-2199", "1/6/2008", "23:00", "2/3/2402", "4:00");
+    MainMethodResult result = invokeMain("-print", "-textFile", "hello/there/test.txt", "MonkeyQueen", "123-456-7891", "153-234-2199", "1/6/2008", "10:00", "PM", "2/3/2402", "4:00", "AM");
     assertThat(result.getTextWrittenToStandardOut(), containsString(String.join(
         System.getProperty("line.separator"),
         "Customer: MonkeyQueen",
-        "Phone call from 123-456-7891 to 153-234-2199 from 1/6/2008 23:00 to 2/3/2402 4:00")));
+        "Phone call from 123-456-7891 to 153-234-2199 from 1/6/2008 10:00 PM to 2/3/2402 4:00 AM")));
     assertThat(result.getExitCode(),equalTo(0));
   }
 
   public void testMalformedFile(){
-    MainMethodResult result = invokeMain("-print", "-textFile", "Malformed.txt", "MonkeyKing", "123-456-7891", "153-234-2199", "1/6/2008", "23:00", "2/3/2402", "4:00");
+    MainMethodResult result = invokeMain("-print", "-textFile", "Malformed.txt", "MonkeyKing", "123-456-7891", "153-234-2199", "1/6/2008", "2:00", "pm", "2/3/2402", "4:00", "pm");
     assertThat(result.getTextWrittenToStandardError(), containsString("Invalid phone number entered."));
     assertThat(result.getExitCode(),equalTo(1));
   }
 
   public void testRelativePath1(){
-    MainMethodResult result = invokeMain("-textFile", "manpreet/test.txt", "-print", "MonkeyQueen", "123-456-7891", "153-234-2199", "1/6/2008", "23:00", "2/3/2402", "4:00");
+    MainMethodResult result = invokeMain("-textFile", "manpreet/test.txt", "-print", "MonkeyQueen", "123-456-7891", "153-234-2199", "1/6/2008", "9:00", "aM", "2/3/2402", "11:00", "AM");
     assertThat(result.getTextWrittenToStandardOut(), containsString(String.join(
         System.getProperty("line.separator"),
         "Customer: MonkeyQueen",
-        "Phone call from 123-456-7891 to 153-234-2199 from 1/6/2008 23:00 to 2/3/2402 4:00")));
+        "Phone call from 123-456-7891 to 153-234-2199 from 1/6/2008 9:00 AM to 2/3/2402 11:00 AM")));
     assertThat(result.getExitCode(),equalTo(0));
   }
   @Test
@@ -309,5 +309,4 @@ public class Project3IT extends InvokeMainTestCase {
     testMalformedFile();
     testRelativePath1();
   }
-  */
 }
