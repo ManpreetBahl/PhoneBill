@@ -5,10 +5,12 @@ import edu.pdx.cs410J.AbstractPhoneCall;
 import edu.pdx.cs410J.ParserException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.Date;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 /**
@@ -50,12 +52,15 @@ public class PhoneCall extends AbstractPhoneCall implements Comparable<PhoneCall
     validateNumber(callerNumber);
     validateNumber(calleeNumber);
 
+    //Check to make sure start time is before end time
+    if (startTime.after(endTime)) {
+      throw new IllegalArgumentException("Start time can't be after end time!");
+    }
+
     this.callerNumber = callerNumber;
     this.calleeNumber = calleeNumber;
     this.startTime = startTime;
     this.endTime = endTime;
-
-    //SimpleDateFormat sdf = new SimpleDateFormat("M/d/yyyy h:mm a");
     this.startTimeString = sdf.format(startTime);
     this.endTimeString = sdf.format(endTime);
   }
@@ -178,6 +183,15 @@ public class PhoneCall extends AbstractPhoneCall implements Comparable<PhoneCall
     return this.endTime;
   }
 
+  /**
+   * This function compares the current PhoneCall object with another
+   * and is used to maintain a sorted order in the PhoneBill based on
+   * start time of the call. In case of a tie, the caller's phone numbers
+   * are used.
+   * @param other The other PhoneCall object to compare to.
+   * @return Integer indicating whether the current PhoneCall comes before
+   *         or after the passed in PhoneCall.
+   */
   @Override
   public int compareTo(PhoneCall other){
     if (this.startTime.before(other.getStartTime())) {
@@ -191,5 +205,13 @@ public class PhoneCall extends AbstractPhoneCall implements Comparable<PhoneCall
       return Integer.compare(callerPhone1,callerPhone2);
     }
 
+  }
+
+  /**
+   * This function determines the duration of the call and converts it into minutes.
+   * @return Long indicating the duration of the call in minutes.
+   */
+  public long duration(){
+    return TimeUnit.MILLISECONDS.toMinutes(this.endTime.getTime() - this.startTime.getTime());
   }
 }

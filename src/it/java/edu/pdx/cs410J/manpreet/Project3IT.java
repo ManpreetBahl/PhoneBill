@@ -309,4 +309,32 @@ public class Project3IT extends InvokeMainTestCase {
     testMalformedFile();
     testRelativePath1();
   }
+
+  @Test
+  public void testPrettyPrintBasic(){
+    MainMethodResult result = invokeMain("-pretty", "PrettyTest.txt", "-print", "MonkeyQueen", "123-456-7891", "153-234-2199", "1/6/2008", "9:00", "aM", "2/3/2402", "11:00", "AM");
+    assertThat(result.getTextWrittenToStandardOut(), containsString(String.join(
+        System.getProperty("line.separator"),
+        "Customer: MonkeyQueen",
+        "Phone call from 123-456-7891 to 153-234-2199 from 1/6/2008 9:00 AM to 2/3/2402 11:00 AM")));
+    assertThat(result.getExitCode(),equalTo(0));
+  }
+
+
+  @Test
+  public void testPrettyPrintStandardOut(){
+    MainMethodResult result = invokeMain("-pretty", "-", "-print", "MonkeyQueen", "123-456-7891", "153-234-2199", "1/6/2008", "9:00", "aM", "1/6/2008", "11:00", "AM");
+    assertThat(result.getTextWrittenToStandardOut(), containsString(String.join(
+        System.getProperty("line.separator"),
+        "Customer: MonkeyQueen",
+        "Phone call from 123-456-7891 to 153-234-2199 from 1/6/2008 9:00 AM to 1/6/2008 11:00 AM",
+        "PHONE BILL: MonkeyQueen",
+        "----------------------------------------------------------------------------------------------------------",
+        "|              Caller|              Callee|          Start Time|            End Time|   Duration(minutes)|",
+        "----------------------------------------------------------------------------------------------------------",
+        "|        123-456-7891|        153-234-2199|    1/6/2008 9:00 AM|   1/6/2008 11:00 AM|                 120|",
+        "----------------------------------------------------------------------------------------------------------"
+    )));
+    assertThat(result.getExitCode(),equalTo(0));
+  }
 }

@@ -88,6 +88,12 @@ public class Project3 {
     //End time Date object
     Date end = null;
 
+    //File Path for Pretty Print
+    String prettyfp = null;
+
+    //Should the phone bill be pretty printed?
+    boolean toPretty = false;
+
     //Make sure there are command line arguments
     if(args.length == 0){
       errorAndExit("Missing command line arguments");
@@ -118,7 +124,17 @@ public class Project3 {
         filepath = args[Arrays.asList(args).indexOf("-textFile") + 1];
         toText = true;
       }catch (ArrayIndexOutOfBoundsException ae){
-        errorAndExit("Missing file path");
+        errorAndExit("Missing file path for textfile option");
+      }
+    }
+
+    if (containsOption(args, "-pretty")){
+      try{
+        startIndex += 2;
+        prettyfp = args[Arrays.asList(args).indexOf("-pretty") + 1];
+        toPretty = true;
+      }catch (ArrayIndexOutOfBoundsException ae){
+        errorAndExit("Missing file path for pretty print");
       }
     }
 
@@ -175,6 +191,13 @@ public class Project3 {
       errorAndExit("Missing am/pm marker for end time of phone call");
     } else if (filepath == null && toText) {
       errorAndExit("Missing file path");
+    } else if (prettyfp == null && toPretty) {
+      errorAndExit("Missing file path for pretty print");
+    }
+
+    //Check to make the file path for textFile and pretty print options are different
+    if(filepath != null && prettyfp != null && filepath.equals(prettyfp)){
+      errorAndExit("The file path for textfile and pretty print cannot be the same!");
     }
 
     try{
@@ -193,6 +216,7 @@ public class Project3 {
 
       //Attempt to create a new PhoneCall. Validation of the callerNum and calleeNum will be handled in constructor
       toAdd = new PhoneCall(callerNum, calleeNum, start, end);
+
       if(toText){
         //Attempt to parse the file specified to get customer data
         try{
@@ -229,6 +253,11 @@ public class Project3 {
             toAdd.toString()
             )
         );
+      }
+
+      if(toPretty){
+        PrettyPrinter pp = new PrettyPrinter(prettyfp);
+        pp.dump(bill);
       }
 
       //Exit gracefully with status code of 0
