@@ -80,7 +80,7 @@ public class Project3 {
     boolean toText = false;
 
     //SimpleDateFormatter parser
-    SimpleDateFormat sdf = new SimpleDateFormat("M/d/yyyy h:mm a");
+    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
 
     //Start time Date object
     Date start = null;

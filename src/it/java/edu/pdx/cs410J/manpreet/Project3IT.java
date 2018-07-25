@@ -147,12 +147,12 @@ public class Project3IT extends InvokeMainTestCase {
 
   @Test
   public void testDisplay(){
-    MainMethodResult result = invokeMain("-print", "customer", "123-456-7890", "123-456-7899", "1/2/2301", "3:00", "am", "2/3/2402", "1:00", "pm");
+    MainMethodResult result = invokeMain("-print", "customer", "123-456-7890", "123-456-7899", "1/2/2301", "03:00", "am", "2/3/2402", "1:00", "pm");
     assertThat(result.getExitCode(),equalTo(0));
     assertThat(result.getTextWrittenToStandardOut(), containsString(String.join(
         System.getProperty("line.separator"),
         "Customer: customer",
-        "Phone call from 123-456-7890 to 123-456-7899 from 1/2/2301 3:00 AM to 2/3/2402 1:00 PM"
+        "Phone call from 123-456-7890 to 123-456-7899 from 01/02/2301 03:00 AM to 02/03/2402 01:00 PM"
         ))
     );
   }
@@ -208,12 +208,12 @@ public class Project3IT extends InvokeMainTestCase {
 
   @Test
   public void testMultiWordCustomerName(){
-    MainMethodResult result = invokeMain("-print", "Monkey King", "123-456-7890", "123-456-7899", "1/6/2008", "3:00", "pm", "2/3/2402", "4:00", "am");
+    MainMethodResult result = invokeMain("-print", "Monkey King", "123-456-7890", "123-456-7899", "1/06/2008", "3:00", "pm", "02/3/2402", "04:00", "am");
     assertThat(result.getExitCode(),equalTo(0));
     assertThat(result.getTextWrittenToStandardOut(), containsString(String.join(
         System.getProperty("line.separator"),
         "Customer: Monkey King",
-        "Phone call from 123-456-7890 to 123-456-7899 from 1/6/2008 3:00 PM to 2/3/2402 4:00 AM"
+        "Phone call from 123-456-7890 to 123-456-7899 from 01/06/2008 03:00 PM to 02/03/2402 04:00 AM"
         ))
     );
   }
@@ -227,11 +227,11 @@ public class Project3IT extends InvokeMainTestCase {
 
 
   public void testFullCommandArgsWithTextFile(){
-    MainMethodResult result = invokeMain("-print", "-textFile", "MonkeyKing.txt", "MonkeyKing", "123-456-7891", "153-234-2199", "1/6/2008", "3:00", "am", "2/3/2402", "4:00", "pm");
+    MainMethodResult result = invokeMain("-print", "-textFile", "MonkeyKing.txt", "MonkeyKing", "123-456-7891", "153-234-2199", "01/06/2008", "03:00", "am", "2/3/2402", "4:00", "pm");
     assertThat(result.getTextWrittenToStandardOut(), containsString(String.join(
         System.getProperty("line.separator"),
         "Customer: MonkeyKing",
-        "Phone call from 123-456-7891 to 153-234-2199 from 1/6/2008 3:00 AM to 2/3/2402 4:00 PM"
+        "Phone call from 123-456-7891 to 153-234-2199 from 01/06/2008 03:00 AM to 02/03/2402 04:00 PM"
         ))
     );
     assertThat(result.getExitCode(),equalTo(0));
@@ -243,7 +243,7 @@ public class Project3IT extends InvokeMainTestCase {
     assertThat(result.getTextWrittenToStandardOut(), containsString(String.join(
         System.getProperty("line.separator"),
         "Customer: MonkeyKing",
-        "Phone call from 123-456-7891 to 153-234-2199 from 1/6/2008 2:00 PM to 2/3/2402 4:00 PM"
+        "Phone call from 123-456-7891 to 153-234-2199 from 01/06/2008 02:00 PM to 02/03/2402 04:00 PM"
         ))
     );
     assertThat(result.getExitCode(),equalTo(0));
@@ -269,7 +269,7 @@ public class Project3IT extends InvokeMainTestCase {
     assertThat(result.getTextWrittenToStandardOut(), containsString(String.join(
         System.getProperty("line.separator"),
         "Customer: MonkeyQueen",
-        "Phone call from 123-456-7891 to 153-234-2199 from 1/6/2008 12:00 PM to 2/3/2402 4:00 AM"
+        "Phone call from 123-456-7891 to 153-234-2199 from 01/06/2008 12:00 PM to 02/03/2402 04:00 AM"
     )));
     assertThat(result.getExitCode(),equalTo(0));
   }
@@ -279,7 +279,7 @@ public class Project3IT extends InvokeMainTestCase {
     assertThat(result.getTextWrittenToStandardOut(), containsString(String.join(
         System.getProperty("line.separator"),
         "Customer: MonkeyQueen",
-        "Phone call from 123-456-7891 to 153-234-2199 from 1/6/2008 10:00 PM to 2/3/2402 4:00 AM")));
+        "Phone call from 123-456-7891 to 153-234-2199 from 01/06/2008 10:00 PM to 02/03/2402 04:00 AM")));
     assertThat(result.getExitCode(),equalTo(0));
   }
 
@@ -294,7 +294,7 @@ public class Project3IT extends InvokeMainTestCase {
     assertThat(result.getTextWrittenToStandardOut(), containsString(String.join(
         System.getProperty("line.separator"),
         "Customer: MonkeyQueen",
-        "Phone call from 123-456-7891 to 153-234-2199 from 1/6/2008 9:00 AM to 2/3/2402 11:00 AM")));
+        "Phone call from 123-456-7891 to 153-234-2199 from 01/06/2008 09:00 AM to 02/03/2402 11:00 AM")));
     assertThat(result.getExitCode(),equalTo(0));
   }
   @Test
@@ -312,28 +312,28 @@ public class Project3IT extends InvokeMainTestCase {
 
   @Test
   public void testPrettyPrintBasic(){
-    MainMethodResult result = invokeMain("-pretty", "PrettyTest.txt", "-print", "MonkeyQueen", "123-456-7891", "153-234-2199", "1/6/2008", "9:00", "aM", "2/3/2402", "11:00", "AM");
+    MainMethodResult result = invokeMain("-pretty", "PrettyTest.txt", "-print", "MonkeyQueen", "123-456-7891", "153-234-2199", "1/6/2008", "09:00", "aM", "2/3/2402", "11:00", "AM");
     assertThat(result.getTextWrittenToStandardOut(), containsString(String.join(
         System.getProperty("line.separator"),
         "Customer: MonkeyQueen",
-        "Phone call from 123-456-7891 to 153-234-2199 from 1/6/2008 9:00 AM to 2/3/2402 11:00 AM")));
+        "Phone call from 123-456-7891 to 153-234-2199 from 01/06/2008 09:00 AM to 02/03/2402 11:00 AM")));
     assertThat(result.getExitCode(),equalTo(0));
   }
 
 
   @Test
   public void testPrettyPrintStandardOut(){
-    MainMethodResult result = invokeMain("-pretty", "-", "-print", "MonkeyQueen", "123-456-7891", "153-234-2199", "1/6/2008", "9:00", "aM", "1/6/2008", "11:00", "AM");
+    MainMethodResult result = invokeMain("-pretty", "-", "-print", "MonkeyQueen", "123-456-7891", "153-234-2199", "01/06/2008", "09:00", "aM", "1/6/2008", "11:00", "AM");
     assertThat(result.getTextWrittenToStandardOut(), containsString(String.join(
         System.getProperty("line.separator"),
         "Customer: MonkeyQueen",
-        "Phone call from 123-456-7891 to 153-234-2199 from 1/6/2008 9:00 AM to 1/6/2008 11:00 AM",
+        "Phone call from 123-456-7891 to 153-234-2199 from 01/06/2008 09:00 AM to 01/06/2008 11:00 AM",
         "PHONE BILL: MonkeyQueen",
-        "----------------------------------------------------------------------------------------------------------",
-        "|              Caller|              Callee|          Start Time|            End Time|   Duration(minutes)|",
-        "----------------------------------------------------------------------------------------------------------",
-        "|        123-456-7891|        153-234-2199|    1/6/2008 9:00 AM|   1/6/2008 11:00 AM|                 120|",
-        "----------------------------------------------------------------------------------------------------------"
+        "-----------------------------------------------------------------------------------------------------------------------------------",
+        "|                   Caller|                   Callee|               Start Time|                 End Time|        Duration(minutes)|",
+        "-----------------------------------------------------------------------------------------------------------------------------------",
+        "|             123-456-7891|             153-234-2199|      01/06/2008 09:00 AM|      01/06/2008 11:00 AM|                      120|",
+        "-----------------------------------------------------------------------------------------------------------------------------------"
     )));
     assertThat(result.getExitCode(),equalTo(0));
   }
@@ -344,13 +344,13 @@ public class Project3IT extends InvokeMainTestCase {
     assertThat(result.getTextWrittenToStandardOut(), containsString(String.join(
         System.getProperty("line.separator"),
         "Customer: MonkeyQueen",
-        "Phone call from 123-456-7891 to 153-234-2199 from 1/6/2008 9:00 AM to 1/6/2008 11:00 AM",
+        "Phone call from 123-456-7891 to 153-234-2199 from 01/06/2008 09:00 AM to 01/06/2008 11:00 AM",
         "PHONE BILL: MonkeyQueen",
-        "----------------------------------------------------------------------------------------------------------",
-        "|              Caller|              Callee|          Start Time|            End Time|   Duration(minutes)|",
-        "----------------------------------------------------------------------------------------------------------",
-        "|        123-456-7891|        153-234-2199|    1/6/2008 9:00 AM|   1/6/2008 11:00 AM|                 120|",
-        "----------------------------------------------------------------------------------------------------------"
+        "-----------------------------------------------------------------------------------------------------------------------------------",
+        "|                   Caller|                   Callee|               Start Time|                 End Time|        Duration(minutes)|",
+        "-----------------------------------------------------------------------------------------------------------------------------------",
+        "|             123-456-7891|             153-234-2199|      01/06/2008 09:00 AM|      01/06/2008 11:00 AM|                      120|",
+        "-----------------------------------------------------------------------------------------------------------------------------------"
     )));
     assertThat(result.getExitCode(),equalTo(0));
   }
@@ -361,15 +361,15 @@ public class Project3IT extends InvokeMainTestCase {
     assertThat(result.getTextWrittenToStandardOut(), containsString(String.join(
         System.getProperty("line.separator"),
         "Customer: MonkeyQueen",
-        "Phone call from 123-456-7891 to 153-234-2199 from 1/5/2008 9:00 PM to 1/5/2008 11:00 PM",
+        "Phone call from 123-456-7891 to 153-234-2199 from 01/05/2008 09:00 PM to 01/05/2008 11:00 PM",
         "PHONE BILL: MonkeyQueen",
-        "----------------------------------------------------------------------------------------------------------",
-        "|              Caller|              Callee|          Start Time|            End Time|   Duration(minutes)|",
-        "----------------------------------------------------------------------------------------------------------",
-        "|        123-456-7891|        153-234-2199|    1/5/2008 9:00 PM|   1/5/2008 11:00 PM|                 120|",
-        "----------------------------------------------------------------------------------------------------------",
-        "|        123-456-7891|        153-234-2199|    1/6/2008 9:00 AM|   1/6/2008 11:00 AM|                 120|",
-        "----------------------------------------------------------------------------------------------------------"
+        "-----------------------------------------------------------------------------------------------------------------------------------",
+        "|                   Caller|                   Callee|               Start Time|                 End Time|        Duration(minutes)|",
+        "-----------------------------------------------------------------------------------------------------------------------------------",
+        "|             123-456-7891|             153-234-2199|      01/05/2008 09:00 PM|      01/05/2008 11:00 PM|                      120|",
+        "-----------------------------------------------------------------------------------------------------------------------------------",
+        "|             123-456-7891|             153-234-2199|      01/06/2008 09:00 AM|      01/06/2008 11:00 AM|                      120|",
+        "-----------------------------------------------------------------------------------------------------------------------------------"
     )));
     assertThat(result.getExitCode(),equalTo(0));
   }

@@ -54,20 +54,20 @@ public class PrettyPrinter implements PhoneBillDumper {
     try{
       if(bill != null){
         StringBuffer sf = new StringBuffer();
-        for(int i = 0; i < 106; i++){
+        for(int i = 0; i < 131; i++){
           sf.append("-");
         }
         bw.write("PHONE BILL: " + bill.getCustomer());
         bw.newLine();
         bw.write(sf.toString());
         bw.newLine();
-        bw.write(String.format("|%20s|%20s|%20s|%20s|%20s|", "Caller", "Callee","Start Time", "End Time", "Duration(minutes)"));
+        bw.write(String.format("|%25s|%25s|%25s|%25s|%25s|", "Caller", "Callee","Start Time", "End Time", "Duration(minutes)"));
         bw.newLine();
         bw.write(sf.toString());
         bw.newLine();
         for(Object c: bill.getPhoneCalls()){
           PhoneCall call = (PhoneCall) c;
-          bw.write(String.format("|%20s|%20s|%20s|%20s|%20s|", call.getCaller(),call.getCallee(),
+          bw.write(String.format("|%25s|%25s|%25s|%25s|%25s|", call.getCaller(),call.getCallee(),
               call.getStartTimeString(), call.getEndTimeString(),
               call.duration()));
           bw.newLine();

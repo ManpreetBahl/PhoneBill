@@ -38,7 +38,7 @@ public class PhoneCall extends AbstractPhoneCall implements Comparable<PhoneCall
   private Date endTime;
 
   //Date formatter
-  private SimpleDateFormat sdf = new SimpleDateFormat("M/d/yyyy h:mm a");
+  private SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
 
   /**
    * Creates a new <code>PhoneCall</code>. The startTime and endTime Date objects need to be
@@ -111,7 +111,7 @@ public class PhoneCall extends AbstractPhoneCall implements Comparable<PhoneCall
    */
   private void validateDateTime(String time){
     // DateTime format patterns that are acceptable
-    String[] patterns = {"M/d/uuuu H:mm", "M/d/uuuu k:mm", "M/d/uuuu h:mm a"};
+    String[] patterns = {"MM/dd/uuuu HH:mm", "MM/dd/uuuu kk:mm", "MM/dd/uuuu hh:mm a"};
 
     //For each pattern, attempt to parse the date time string
     for (String pattern : patterns){
