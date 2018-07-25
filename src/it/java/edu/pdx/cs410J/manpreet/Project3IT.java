@@ -376,7 +376,7 @@ public class Project3IT extends InvokeMainTestCase {
 
   @Test
   public void testPrettyPrintTextFileSameFilePath(){
-    MainMethodResult result = invokeMain("-pretty", "combined/test.txt", "-print", "-textFile", "combined/test.txt", "MonkeyQueen", "123-456-7891", "153-234-2199", "1/5/2008", "9:00", "Pm", "1/5/2008", "11:00", "pm");
+    MainMethodResult result = invokeMain("-pretty", "same/test.txt", "-print", "-textFile", "same/test.txt", "MonkeyQueen", "123-456-7891", "153-234-2199", "1/5/2008", "9:00", "Pm", "1/5/2008", "11:00", "pm");
     assertThat(result.getTextWrittenToStandardError(), containsString("The file path for textfile and pretty print cannot be the same!"));
     assertThat(result.getExitCode(),equalTo(1));
   }

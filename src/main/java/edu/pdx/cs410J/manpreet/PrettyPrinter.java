@@ -1,21 +1,28 @@
 package edu.pdx.cs410J.manpreet;
 
 import edu.pdx.cs410J.AbstractPhoneBill;
-import edu.pdx.cs410J.AbstractPhoneCall;
 import edu.pdx.cs410J.PhoneBillDumper;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileDescriptor;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
+/**
+ * This class pretty prints a <code>PhoneBill</code> object in a table format to either a file
+ * or to standard output.
+ */
 public class PrettyPrinter implements PhoneBillDumper {
   private BufferedWriter bw;
 
+  /**
+   * This is the constructor which initializes a BufferedWriter to write to either a text file
+   * or to standard output
+   * @param filepath The path of the text file. "-" for standard output
+   * @throws IOException If an error occurred initializing BufferedWriter or creating the text file
+   */
   PrettyPrinter(String filepath) throws IOException{
     if (filepath.equals("-")) {
-      //bw = new BufferedWriter(new FileWriter(FileDescriptor.out));
       bw = new BufferedWriter(new OutputStreamWriter(System.out));
     }
     else{
@@ -49,6 +56,11 @@ public class PrettyPrinter implements PhoneBillDumper {
     }
   }
 
+  /**
+   * This method dumps the contents of a <code>PhoneBill</code> in a nice tabular format.
+   * @param bill The <code>PhoneBill</code> object to dump the contents of.
+   * @throws IOException If an error occurred when attempting to write the data.
+   */
   @Override
   public void dump(AbstractPhoneBill bill) throws IOException{
     try{

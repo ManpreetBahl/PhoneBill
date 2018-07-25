@@ -7,6 +7,9 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
+/**
+ * This class implements the main command line interaction for this application.
+ */
 public class Project3 {
   /**
    * The README text for the -README option parameter. The code for the String.join and
@@ -128,6 +131,9 @@ public class Project3 {
       }
     }
 
+    /*If the command line argument contains -pretty, get the filepath from the next args
+    parameter. This also increments the startIndex for command line parsing by 2.
+     */
     if (containsOption(args, "-pretty")){
       try{
         startIndex += 2;
@@ -255,6 +261,7 @@ public class Project3 {
         );
       }
 
+      //Print the PhoneBill contents in a tabular format
       if(toPretty){
         PrettyPrinter pp = new PrettyPrinter(prettyfp);
         pp.dump(bill);
