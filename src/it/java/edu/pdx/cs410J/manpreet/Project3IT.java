@@ -337,4 +337,47 @@ public class Project3IT extends InvokeMainTestCase {
     )));
     assertThat(result.getExitCode(),equalTo(0));
   }
+
+  @Test
+  public void testPrettyPrintTextFile(){
+    MainMethodResult result = invokeMain("-pretty", "-", "-print", "-textFile", "combined/test.txt", "MonkeyQueen", "123-456-7891", "153-234-2199", "1/6/2008", "9:00", "aM", "1/6/2008", "11:00", "AM");
+    assertThat(result.getTextWrittenToStandardOut(), containsString(String.join(
+        System.getProperty("line.separator"),
+        "Customer: MonkeyQueen",
+        "Phone call from 123-456-7891 to 153-234-2199 from 1/6/2008 9:00 AM to 1/6/2008 11:00 AM",
+        "PHONE BILL: MonkeyQueen",
+        "----------------------------------------------------------------------------------------------------------",
+        "|              Caller|              Callee|          Start Time|            End Time|   Duration(minutes)|",
+        "----------------------------------------------------------------------------------------------------------",
+        "|        123-456-7891|        153-234-2199|    1/6/2008 9:00 AM|   1/6/2008 11:00 AM|                 120|",
+        "----------------------------------------------------------------------------------------------------------"
+    )));
+    assertThat(result.getExitCode(),equalTo(0));
+  }
+
+  @Test
+  public void testPrettyPrintTextFile2(){
+    MainMethodResult result = invokeMain("-pretty", "-", "-print", "-textFile", "combined/test.txt", "MonkeyQueen", "123-456-7891", "153-234-2199", "1/5/2008", "9:00", "Pm", "1/5/2008", "11:00", "pm");
+    assertThat(result.getTextWrittenToStandardOut(), containsString(String.join(
+        System.getProperty("line.separator"),
+        "Customer: MonkeyQueen",
+        "Phone call from 123-456-7891 to 153-234-2199 from 1/5/2008 9:00 PM to 1/5/2008 11:00 PM",
+        "PHONE BILL: MonkeyQueen",
+        "----------------------------------------------------------------------------------------------------------",
+        "|              Caller|              Callee|          Start Time|            End Time|   Duration(minutes)|",
+        "----------------------------------------------------------------------------------------------------------",
+        "|        123-456-7891|        153-234-2199|    1/5/2008 9:00 PM|   1/5/2008 11:00 PM|                 120|",
+        "----------------------------------------------------------------------------------------------------------",
+        "|        123-456-7891|        153-234-2199|    1/6/2008 9:00 AM|   1/6/2008 11:00 AM|                 120|",
+        "----------------------------------------------------------------------------------------------------------"
+    )));
+    assertThat(result.getExitCode(),equalTo(0));
+  }
+
+  @Test
+  public void testPrettyPrintTextFileSameFilePath(){
+    MainMethodResult result = invokeMain("-pretty", "combined/test.txt", "-print", "-textFile", "combined/test.txt", "MonkeyQueen", "123-456-7891", "153-234-2199", "1/5/2008", "9:00", "Pm", "1/5/2008", "11:00", "pm");
+    assertThat(result.getTextWrittenToStandardError(), containsString("The file path for textfile and pretty print cannot be the same!"));
+    assertThat(result.getExitCode(),equalTo(1));
+  }
 }
