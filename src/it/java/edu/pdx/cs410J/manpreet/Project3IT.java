@@ -312,7 +312,7 @@ public class Project3IT extends InvokeMainTestCase {
 
   @Test
   public void testPrettyPrintBasic(){
-    MainMethodResult result = invokeMain("-pretty", "PrettyTest.txt", "-print", "MonkeyQueen", "123-456-7891", "153-234-2199", "1/6/2008", "09:00", "aM", "2/3/2402", "11:00", "AM");
+    MainMethodResult result = invokeMain("-pretty", "PrettyTest.txt", "-print", "MonkeyQueen", "123-456-7891", "153-234-2199", "01/06/2008", "09:00", "aM", "02/03/2402", "11:00", "AM");
     assertThat(result.getTextWrittenToStandardOut(), containsString(String.join(
         System.getProperty("line.separator"),
         "Customer: MonkeyQueen",
