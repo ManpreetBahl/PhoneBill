@@ -380,4 +380,25 @@ public class Project3IT extends InvokeMainTestCase {
     assertThat(result.getTextWrittenToStandardError(), containsString("The file path for textfile and pretty print cannot be the same!"));
     assertThat(result.getExitCode(),equalTo(1));
   }
+
+  @Test
+  public void testPrettyPrintBadStartYear(){
+    MainMethodResult result = invokeMain("-pretty", "-", "-print", "MonkeyQueen", "123-456-7891", "153-234-2199", "1/5/20XX", "9:00", "Pm", "1/5/2008", "11:00", "pm");
+    assertThat(result.getTextWrittenToStandardError(), containsString("Invalid start time! Please use AM/PM Date time format"));
+    assertThat(result.getExitCode(),equalTo(1));
+  }
+
+  @Test
+  public void testPrettyPrintBadEndTime(){
+    MainMethodResult result = invokeMain("-pretty", "-", "-print", "MonkeyQueen", "123-456-7891", "153-234-2199", "1/5/2018", "9:00", "Pm", "01/04/20/1", "11:00", "pm");
+    assertThat(result.getTextWrittenToStandardError(), containsString("Invalid end time! Please use AM/PM Date time format"));
+    assertThat(result.getExitCode(),equalTo(1));
+  }
+
+  @Test
+  public void testPrettyPrintExtraCommands(){
+    MainMethodResult result = invokeMain("-pretty", "-", "-print", "-textFile", "file.txt","MonkeyQueen", "123-456-7891", "153-234-2199", "1/5/2018", "9:00", "Pm", "01/04/2019", "11:00", "pm", "fred");
+    assertThat(result.getTextWrittenToStandardError(), containsString("Too many arguments entered"));
+    assertThat(result.getExitCode(),equalTo(1));
+  }
 }

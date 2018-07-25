@@ -75,19 +75,21 @@ public class PhoneCall extends AbstractPhoneCall implements Comparable<PhoneCall
   PhoneCall(String callerNumber, String calleeNumber, String startTimeString, String endTimeString){
     validateNumber(callerNumber);
     validateNumber(calleeNumber);
-    validateDateTime(startTimeString);
-    validateDateTime(endTimeString);
 
     this.callerNumber = callerNumber;
     this.calleeNumber = calleeNumber;
-    this.startTimeString = startTimeString;
-    this.endTimeString = endTimeString;
     try{
-      this.startTime = sdf.parse(this.startTimeString);
-      this.endTime = sdf.parse(this.endTimeString);
+      this.startTime = sdf.parse(startTimeString);
+      this.endTime = sdf.parse(endTimeString);
     }catch (ParseException pe){
       throw new IllegalArgumentException("Can't parse the time string due to bad format");
     }
+    //Check to make sure start time is before end time
+    if (this.startTime.after(this.endTime)) {
+      throw new IllegalArgumentException("Start time can't be after end time!");
+    }
+    this.startTimeString = sdf.format(this.startTime);
+    this.endTimeString = sdf.format(this.endTime);
   }
 
   /**
@@ -111,7 +113,10 @@ public class PhoneCall extends AbstractPhoneCall implements Comparable<PhoneCall
    */
   private void validateDateTime(String time){
     // DateTime format patterns that are acceptable
-    String[] patterns = {"MM/dd/uuuu HH:mm", "MM/dd/uuuu kk:mm", "MM/dd/uuuu hh:mm a"};
+    String[] patterns = {"MM/dd/uuuu HH:mm", "MM/dd/uuuu kk:mm", "MM/dd/yyyy hh:mm a",
+                         "M/dd/yyyy hh:mm a", "MM/d/yyyy hh:mm a", "MM/dd/yyyy h:mm a",
+                         "M/d/yyyy h:mm a"
+    };
 
     //For each pattern, attempt to parse the date time string
     for (String pattern : patterns){

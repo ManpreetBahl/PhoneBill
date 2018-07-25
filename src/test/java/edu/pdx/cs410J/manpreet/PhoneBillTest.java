@@ -25,7 +25,7 @@ public class PhoneBillTest {
     @Test
     public void canAddPhoneCall(){
         bill = new PhoneBill("Yoda");
-        call = new PhoneCall("123-456-7890", "098-765-4321", "6/30/2018 1:00", "6/30/2018 2:00");
+        call = new PhoneCall("123-456-7890", "098-765-4321", "06/30/2018 01:00 am", "06/30/2018 02:00 pm");
         bill.addPhoneCall(call);
     }
 
@@ -41,7 +41,7 @@ public class PhoneBillTest {
         bill = new PhoneBill("Yoda");
         Date start = null;
         Date end = null;
-        SimpleDateFormat sdf = new SimpleDateFormat("M/dd/yyyy h:mm a");
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
         try{
             start = sdf.parse("6/30/2018 1:00 PM");
         } catch (ParseException pe){
@@ -49,7 +49,7 @@ public class PhoneBillTest {
         }
 
         try{
-            end = sdf.parse("6/30/2018 2:00 AM");
+            end = sdf.parse("6/30/2018 2:00 PM");
         } catch (ParseException pe){
             System.err.println("Invalid end time! Please use AM/PM Date time format");
         }
