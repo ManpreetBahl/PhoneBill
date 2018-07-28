@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 
 /**
  * This class pretty prints a <code>PhoneBill</code> object in a table format to either a file
@@ -14,6 +15,33 @@ import java.io.OutputStreamWriter;
  */
 public class PrettyPrinter implements PhoneBillDumper {
   private BufferedWriter bw;
+  private PrintWriter pw;
+
+  PrettyPrinter(PrintWriter pw){
+    this.pw = pw;
+  }
+
+  public void prettyDump(AbstractPhoneBill toDump){
+    if(toDump != null){
+      StringBuffer sf = new StringBuffer();
+      for(int i = 0; i < 131; i++){
+        sf.append("-");
+      }
+      pw.println("PHONE BILL: " + toDump.getCustomer());
+      pw.println(sf.toString());
+      pw.println(String.format("|%25s|%25s|%25s|%25s|%25s|", "Caller", "Callee","Start Time", "End Time", "Duration(minutes)"));
+      pw.println(sf.toString());
+      for(Object c: toDump.getPhoneCalls()){
+        PhoneCall call = (PhoneCall) c;
+        pw.println(String.format("|%25s|%25s|%25s|%25s|%25s|", call.getCaller(),call.getCallee(),
+            call.getStartTimeString(), call.getEndTimeString(),
+            call.duration()));
+        pw.println(sf.toString());
+      }
+      pw.flush();
+      pw.close();
+    }
+  }
 
   /**
    * This is the constructor which initializes a BufferedWriter to write to either a text file

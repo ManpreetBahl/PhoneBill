@@ -3,6 +3,7 @@ package edu.pdx.cs410J.manpreet;
 import edu.pdx.cs410J.AbstractPhoneBill;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Collection;
 import java.util.Collections;
@@ -57,5 +58,18 @@ public class PhoneBill extends AbstractPhoneBill<PhoneCall> {
     @Override
     public Collection<PhoneCall> getPhoneCalls() {
         return this.calls;
+    }
+
+    public Collection<PhoneCall> getPhoneCallsBetweenDate(Date start, Date end){
+        ArrayList<PhoneCall>foundList = new ArrayList<>();
+
+        for(PhoneCall pc : this.calls){
+            if(pc.getStartTime().equals(start) || pc.getStartTime().after(start)){
+                if(pc.getEndTime().before(end) || pc.getEndTime().equals(end)){
+                    foundList.add(pc);
+                }
+            }
+        }
+        return foundList;
     }
 }

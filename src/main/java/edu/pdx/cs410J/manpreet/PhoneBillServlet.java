@@ -2,6 +2,9 @@ package edu.pdx.cs410J.manpreet;
 
 import com.google.common.annotations.VisibleForTesting;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -19,10 +22,16 @@ import java.util.Map;
  */
 public class PhoneBillServlet extends HttpServlet
 {
-    static final String WORD_PARAMETER = "word";
-    static final String DEFINITION_PARAMETER = "definition";
+  static final String CUSTOMER_PARAMETER = "customer";
+  static final String DEFINITION_PARAMETER = "definition";
+  private static final String CALLER_PARAMETER = "caller";
+  private static final String CALLEE_PARAMETER = "callee";
+  private static final String START_TIME_PARAMETER = "startTime";
+  private static final String END_TIME_PARAMETER = "endTime";
 
-    private final Map<String, String> dictionary = new HashMap<>();
+  private final Map<String, String> dictionary = new HashMap<>();
+  private final Map<String, PhoneBill> bills = new HashMap<String, PhoneBill>();
+  private PhoneBill pb = null;
 
     /**
      * Handles an HTTP GET request from a client by writing the definition of the
@@ -33,15 +42,60 @@ public class PhoneBillServlet extends HttpServlet
     @Override
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
     {
-        response.setContentType( "text/plain" );
+      response.setContentType( "text/plain" );
+      String customer = getParameter(CUSTOMER_PARAMETER, request);
+      String startTime = getParameter(START_TIME_PARAMETER, request);
+      String endTime = getParameter(END_TIME_PARAMETER, request);
 
-        String word = getParameter( WORD_PARAMETER, request );
-        if (word != null) {
-            writeDefinition(word, response);
+      if(customer == null){
+        missingRequiredParameter(response,customer);
+      }
 
-        } else {
-            writeAllDictionaryEntries(response);
+      //First variation of GET requests where only customer name is specified
+      if(customer != null && startTime == null && endTime == null){
+        pb = getPhoneBill(customer);
+        if (pb == null){
+          response.sendError(HttpServletResponse.SC_NOT_FOUND, "There are no phonebills for " + customer);
         }
+        else{
+          PrettyPrinter pp = new PrettyPrinter(response.getWriter());
+          pp.prettyDump(pb);
+          response.setStatus(HttpServletResponse.SC_OK);
+        }
+      }
+
+      //Second variation of GET request where all 3 parameters are specified
+      if(customer != null && startTime != null && endTime != null){
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
+        Date start = null;
+        Date end = null;
+
+        try{
+          start = sdf.parse(startTime);
+          end = sdf.parse(endTime);
+        }catch (ParseException pe){
+          response.sendError(HttpServletResponse.SC_BAD_REQUEST, "The datetime entered is malformed!");
+        }
+
+        if(start.after(end)){
+          response.sendError(HttpServletResponse.SC_CONFLICT, "Start time cannot be after end time!");
+        }
+
+        PhoneBill pb = getPhoneBill(customer);
+        if(pb == null){
+          response.sendError(HttpServletResponse.SC_NOT_FOUND, "There are no phonebills for " + customer);
+        }
+        else{
+          PhoneBill pbClone = new PhoneBill(pb.getCustomer());
+          for(PhoneCall pc : pbClone.getPhoneCallsBetweenDate(start, end)){
+            pbClone.addPhoneCall(pc);
+          }
+          PrettyPrinter pp = new PrettyPrinter(response.getWriter());
+          pp.prettyDump(pbClone);
+          response.setStatus(HttpServletResponse.SC_OK);
+        }
+      }
+
     }
 
     /**
@@ -52,27 +106,57 @@ public class PhoneBillServlet extends HttpServlet
     @Override
     protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
     {
-        response.setContentType( "text/plain" );
+      response.setContentType( "text/plain" );
 
-        String word = getParameter(WORD_PARAMETER, request );
-        if (word == null) {
-            missingRequiredParameter(response, WORD_PARAMETER);
-            return;
-        }
+      String customer = getParameter(CUSTOMER_PARAMETER, request );
+      if (customer == null) {
+        missingRequiredParameter(response, CUSTOMER_PARAMETER);
+        return;
+      }
+      String caller = getParameter(CALLER_PARAMETER, request);
+      if (caller == null) {
+        missingRequiredParameter(response, CALLER_PARAMETER);
+        return;
+      }
 
-        String definition = getParameter(DEFINITION_PARAMETER, request );
-        if ( definition == null) {
-            missingRequiredParameter( response, DEFINITION_PARAMETER );
-            return;
-        }
+      String callee = getParameter(CALLEE_PARAMETER, request);
+      if (callee == null) {
+        missingRequiredParameter(response, CALLEE_PARAMETER);
+        return;
+      }
 
-        this.dictionary.put(word, definition);
+      String startTime = getParameter(START_TIME_PARAMETER, request);
+      if (startTime == null) {
+        missingRequiredParameter(response, START_TIME_PARAMETER);
+        return;
+      }
 
-        PrintWriter pw = response.getWriter();
-        pw.println(Messages.definedWordAs(word, definition));
-        pw.flush();
+      String endTime = getParameter(END_TIME_PARAMETER, request);
+      if (endTime == null) {
+        missingRequiredParameter(response, END_TIME_PARAMETER);
+        return;
+      }
 
-        response.setStatus( HttpServletResponse.SC_OK);
+      SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
+      Date start = null;
+      Date end = null;
+      try{
+        start = sdf.parse(startTime);
+        end = sdf.parse(endTime);
+      }catch (ParseException pe){
+        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "The datetime entered is malformed!");
+      }
+
+      PhoneCall call = new PhoneCall(caller, callee, start, end);
+
+      PhoneBill bill = getPhoneBill(customer);
+      if (bill == null) {
+        bill = new PhoneBill(customer);
+        addPhoneBill(bill);
+      }
+      bill.addPhoneCall(call);
+
+      response.setStatus( HttpServletResponse.SC_OK);
     }
 
     /**
@@ -84,10 +168,10 @@ public class PhoneBillServlet extends HttpServlet
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/plain");
 
-        this.dictionary.clear();
+        this.bills.clear();
 
         PrintWriter pw = response.getWriter();
-        pw.println(Messages.allDictionaryEntriesDeleted());
+        pw.println(Messages.allPhoneBillsDeleted());
         pw.flush();
 
         response.setStatus(HttpServletResponse.SC_OK);
@@ -157,8 +241,12 @@ public class PhoneBillServlet extends HttpServlet
     }
 
     @VisibleForTesting
-    String getDefinition(String word) {
-        return this.dictionary.get(word);
+    PhoneBill getPhoneBill(String customer) {
+      return this.bills.get(customer);
     }
 
+    @VisibleForTesting
+    void addPhoneBill(PhoneBill bill) {
+      this.bills.put(bill.getCustomer(), bill);
+    }
 }

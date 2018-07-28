@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import static java.net.HttpURLConnection.HTTP_OK;
+import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 
 /**
  * A helper class for accessing the rest client.  Note that this class provides
@@ -42,15 +43,23 @@ public class PhoneBillRestClient extends HttpRequestHelper
     /**
      * Returns the definition for the given word
      */
-    public String getDefinition(String word) throws IOException {
-      Response response = get(this.url, "word", word);
+    public String getPrettyPhoneBill(String customerName) throws IOException {
+      Response response = get(this.url, "customer", customerName);
       throwExceptionIfNotOkayHttpStatus(response);
-      String content = response.getContent();
-      return Messages.parseDictionaryEntry(content).getValue();
+
+      return response.getContent();
     }
 
-    public void addDictionaryEntry(String word, String definition) throws IOException {
-      Response response = postToMyURL("word", word, "definition", definition);
+    public void addPhoneCall(String customer, PhoneCall toAdd) throws IOException {
+      String[] formData = {
+          "customer", customer,
+          "caller", toAdd.getCaller(),
+          "callee", toAdd.getCallee(),
+          "startTime", toAdd.getStartTimeString(),
+          "endTime", toAdd.getEndTimeString(),
+      };
+
+      Response response = postToMyURL(formData);
       throwExceptionIfNotOkayHttpStatus(response);
     }
 
@@ -59,14 +68,18 @@ public class PhoneBillRestClient extends HttpRequestHelper
       return post(this.url, dictionaryEntries);
     }
 
-    public void removeAllDictionaryEntries() throws IOException {
+    public void removeAllPhoneBills() throws IOException {
       Response response = delete(this.url);
       throwExceptionIfNotOkayHttpStatus(response);
     }
 
     private Response throwExceptionIfNotOkayHttpStatus(Response response) {
       int code = response.getCode();
-      if (code != HTTP_OK) {
+      if (code == HTTP_NOT_FOUND) {
+        String customer = response.getContent();
+        throw new NoSuchPhoneBillException(customer);
+      }
+      else if (code != HTTP_OK) {
         throw new PhoneBillRestException(code);
       }
       return response;
@@ -77,5 +90,4 @@ public class PhoneBillRestClient extends HttpRequestHelper
         super("Got an HTTP Status Code of " + httpStatusCode);
       }
     }
-
 }
