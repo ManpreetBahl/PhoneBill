@@ -23,7 +23,6 @@ import java.util.Map;
 public class PhoneBillServlet extends HttpServlet
 {
   static final String CUSTOMER_PARAMETER = "customer";
-  static final String DEFINITION_PARAMETER = "definition";
   private static final String CALLER_PARAMETER = "caller";
   private static final String CALLEE_PARAMETER = "callee";
   private static final String START_TIME_PARAMETER = "startTime";

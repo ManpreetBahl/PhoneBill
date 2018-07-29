@@ -54,6 +54,7 @@ public class PhoneBillRestClientIT {
     client.addPhoneCall(customer, phoneCall);
 
     String pretty = client.getPrettyPhoneBill(customer);
+    System.out.println(pretty);
     assertThat(pretty, containsString(customer));
     assertThat(pretty, containsString(callerNumber));
     assertThat(pretty, containsString(calleeNumber));
@@ -71,5 +72,6 @@ public class PhoneBillRestClientIT {
     assertThat(response.getContent(), containsString(Messages.missingRequiredParameter("customer")));
     assertThat(response.getCode(), equalTo(HttpURLConnection.HTTP_PRECON_FAILED));
   }
+
 
 }
