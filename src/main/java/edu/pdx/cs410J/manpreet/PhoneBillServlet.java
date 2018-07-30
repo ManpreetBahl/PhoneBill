@@ -30,7 +30,6 @@ public class PhoneBillServlet extends HttpServlet
   private static final String START_TIME_PARAMETER = "startTime";
   private static final String END_TIME_PARAMETER = "endTime";
 
-  private final Map<String, String> dictionary = new HashMap<>();
   private final Map<String, PhoneBill> bills = new HashMap<String, PhoneBill>();
   private PhoneBill pb = null;
 
@@ -107,7 +106,6 @@ public class PhoneBillServlet extends HttpServlet
         }
       }
     }
-
   }
 
   /**

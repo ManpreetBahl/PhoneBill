@@ -22,7 +22,7 @@ import static edu.pdx.cs410J.manpreet.PhoneBillServlet.CUSTOMER_PARAMETER;
  * provide mock http requests and responses.
  */
 public class PhoneBillServletTest {
-
+  
   @Test
   public void initiallyServletContainsNoPhoneBills() throws ServletException, IOException {
     PhoneBillServlet servlet = new PhoneBillServlet();
