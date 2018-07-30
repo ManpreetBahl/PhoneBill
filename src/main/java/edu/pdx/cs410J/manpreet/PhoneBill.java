@@ -60,6 +60,13 @@ public class PhoneBill extends AbstractPhoneBill<PhoneCall> {
         return this.calls;
     }
 
+    /**
+     * This method finds all phone calls for the phone bill within the specified Date
+     * ranges
+     * @param start The start date of the search range.
+     * @param end The end date of the search range.
+     * @return Collection containing <code>PhoneCall</code> within that range.
+     */
     public Collection<PhoneCall> getPhoneCallsBetweenDate(Date start, Date end){
         ArrayList<PhoneCall>foundList = new ArrayList<>();
 

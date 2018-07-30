@@ -35,10 +35,12 @@ public class PhoneBillRestClientIT {
     client.removeAllPhoneBills();
   }
 
-  @Test (expected = NoSuchPhoneBillException.class)
+  @Test
   public void test1EmptyServerContainsNoPhoneBills() throws IOException {
     PhoneBillRestClient client = newPhoneBillRestClient();
-    client.getPrettyPhoneBill("No such customer");
+    HttpRequestHelper.Response response = client.getPrettyPhoneBill("No such customer");
+    assertThat(response.getCode(), equalTo(404));
+    assertThat(response.getContent(), containsString("There are no phonebills for No such customer"));
   }
 
   @Test
@@ -54,7 +56,6 @@ public class PhoneBillRestClientIT {
     client.addPhoneCall(customer, phoneCall);
 
     String pretty = client.getPrettyPhoneBill(customer).getContent();
-    System.out.println(pretty);
     assertThat(pretty, containsString(customer));
     assertThat(pretty, containsString(callerNumber));
     assertThat(pretty, containsString(calleeNumber));
