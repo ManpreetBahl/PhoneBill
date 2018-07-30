@@ -2,8 +2,10 @@ package edu.pdx.cs410J.manpreet;
 
 import com.google.common.annotations.VisibleForTesting;
 
+import java.io.PrintStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -42,15 +44,19 @@ public class PhoneBillServlet extends HttpServlet
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
     {
       response.setContentType( "text/plain" );
+
+      //Get parameters
       String customer = getParameter(CUSTOMER_PARAMETER, request);
       String startTime = getParameter(START_TIME_PARAMETER, request);
       String endTime = getParameter(END_TIME_PARAMETER, request);
 
+      //Make sure that at least the customer name is specified
       if(customer == null){
-        missingRequiredParameter(response,customer);
+        missingRequiredParameter(response, customer);
       }
 
-      //First variation of GET requests where only customer name is specified
+      //First variation of GET requests where only customer name is specified. Gets all phone calls
+      //for that customer
       if(customer != null && startTime == null && endTime == null){
         pb = getPhoneBill(customer);
         if (pb == null){
@@ -63,7 +69,8 @@ public class PhoneBillServlet extends HttpServlet
         }
       }
 
-      //Second variation of GET request where all 3 parameters are specified
+      //Second variation of GET request where all 3 parameters are specified. Gets all phone calls for
+      //that customer within the specified range.
       if(customer != null && startTime != null && endTime != null){
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
         Date start = null;
@@ -86,12 +93,18 @@ public class PhoneBillServlet extends HttpServlet
         }
         else{
           PhoneBill pbClone = new PhoneBill(pb.getCustomer());
-          for(PhoneCall pc : pbClone.getPhoneCallsBetweenDate(start, end)){
-            pbClone.addPhoneCall(pc);
+          Collection<PhoneCall> callsBetweenRange = pb.getPhoneCallsBetweenDate(start, end);
+          if (callsBetweenRange.size() == 0){
+            response.sendError(HttpServletResponse.SC_NO_CONTENT, "There are no phone calls between that range");
           }
-          PrettyPrinter pp = new PrettyPrinter(response.getWriter());
-          pp.prettyDump(pbClone);
-          response.setStatus(HttpServletResponse.SC_OK);
+          else{
+            for(PhoneCall pc : callsBetweenRange){
+              pbClone.addPhoneCall(pc);
+            }
+            PrettyPrinter pp = new PrettyPrinter(response.getWriter());
+            pp.prettyDump(pbClone);
+            response.setStatus(HttpServletResponse.SC_OK);
+          }
         }
       }
 

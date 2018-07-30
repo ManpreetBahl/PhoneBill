@@ -53,7 +53,7 @@ public class PhoneBillRestClientIT {
     String customer = "Customer";
     client.addPhoneCall(customer, phoneCall);
 
-    String pretty = client.getPrettyPhoneBill(customer);
+    String pretty = client.getPrettyPhoneBill(customer).getContent();
     System.out.println(pretty);
     assertThat(pretty, containsString(customer));
     assertThat(pretty, containsString(callerNumber));

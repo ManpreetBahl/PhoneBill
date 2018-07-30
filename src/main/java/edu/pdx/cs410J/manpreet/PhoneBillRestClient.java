@@ -33,24 +33,23 @@ public class PhoneBillRestClient extends HttpRequestHelper
     }
 
     /**
-     * Returns all dictionary entries from the server
-     */
-    public Map<String, String> getAllDictionaryEntries() throws IOException {
-      Response response = get(this.url);
-      return Messages.parseDictionary(response.getContent());
-    }
-
-    /**
      * Returns the definition for the given word
      */
-    public String getPrettyPhoneBill(String customerName) throws IOException {
+    public Response getPrettyPhoneBill(String customerName) throws IOException {
       Response response = get(this.url, "customer", customerName);
-      throwExceptionIfNotOkayHttpStatus(response);
+      //throwExceptionIfNotOkayHttpStatus(response);
 
-      return response.getContent();
+      return response;
     }
 
-    public void addPhoneCall(String customer, PhoneCall toAdd) throws IOException {
+    public Response searchPhoneBill(String customerName, String startTime, String endTime) throws IOException {
+      Response response = get(this.url, "customer", customerName, "startTime", startTime, "endTime", endTime);
+      //throwExceptionIfNotOkayHttpStatus(response);
+
+      return response;
+    }
+
+    public Response addPhoneCall(String customer, PhoneCall toAdd) throws IOException {
       String[] formData = {
           "customer", customer,
           "caller", toAdd.getCaller(),
@@ -59,8 +58,7 @@ public class PhoneBillRestClient extends HttpRequestHelper
           "endTime", toAdd.getEndTimeString(),
       };
 
-      Response response = postToMyURL(formData);
-      throwExceptionIfNotOkayHttpStatus(response);
+      return postToMyURL(formData);
     }
 
     @VisibleForTesting
@@ -68,26 +66,7 @@ public class PhoneBillRestClient extends HttpRequestHelper
       return post(this.url, dictionaryEntries);
     }
 
-    public void removeAllPhoneBills() throws IOException {
-      Response response = delete(this.url);
-      throwExceptionIfNotOkayHttpStatus(response);
-    }
-
-    private Response throwExceptionIfNotOkayHttpStatus(Response response) {
-      int code = response.getCode();
-      if (code == HTTP_NOT_FOUND) {
-        String customer = response.getContent();
-        throw new NoSuchPhoneBillException(customer);
-      }
-      else if (code != HTTP_OK) {
-        throw new PhoneBillRestException(code);
-      }
-      return response;
-    }
-
-    private class PhoneBillRestException extends RuntimeException {
-      public PhoneBillRestException(int httpStatusCode) {
-        super("Got an HTTP Status Code of " + httpStatusCode);
-      }
+    public Response removeAllPhoneBills() throws IOException {
+      return delete(this.url);
     }
 }

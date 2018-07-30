@@ -1,13 +1,19 @@
 package edu.pdx.cs410J.manpreet;
 
+import edu.pdx.cs410J.ParserException;
 import edu.pdx.cs410J.web.HttpRequestHelper;
 
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.ConnectException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Map;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * The main class that parses the command line and communicates with the
@@ -38,9 +44,6 @@ public class Project4 {
     );
 
     public static void main(String... args) {
-        String hostName = null;
-        String portString = null;
-
         //Name of the customer
         String customer = null;
 
@@ -83,9 +86,18 @@ public class Project4 {
         //Is the command a search?
         boolean toSearch = false;
 
+        //Is the command get all customer's phone bill?
+        boolean toGetPhoneBill = false;
+
+        //Host
+        String host = null;
+
+        //Port
+        int port = -1;
+
         //Make sure there are command line arguments
         if(args.length == 0){
-            errorAndExit("Missing command line arguments");
+            errorAndExit(MISSING_ARGS);
         }
 
         /*If the command line arguments contains -README, display the README
@@ -113,91 +125,163 @@ public class Project4 {
             toSearch = true;
         }
 
-        //Get the remaining commands from the args array
-        for(int i = startIndex; i < args.length; i++){
-            //If the command line argument starts with "-", then it's an invalid command
-            if(args[i].startsWith("-")){
-                errorAndExit("Invalid command: " + args[i]);
+        if(toPrint && toSearch){
+            errorAndExit("Cannot print and search at the same time!");
+        }
+
+        /*If the command line argument contains -host, get the host name
+         This also increments the startIndex for command line parsing by 2.
+         */
+        if (containsOption(args, "-host")){
+            try{
+                startIndex += 2;
+                host = args[Arrays.asList(args).indexOf("-host") + 1];
+            }catch (ArrayIndexOutOfBoundsException ae){
+                errorAndExit("Missing host name!");
             }
-            if (customer == null && !toSearch){
-                customer = args[i];
+        }
+
+        /*If the command line argument contains -port, get the port number
+         This also increments the startIndex for command line parsing by 2.
+         */
+        if (containsOption(args, "-port")){
+            try{
+                startIndex += 2;
+                port = Integer.parseInt(args[Arrays.asList(args).indexOf("-port") + 1]);
+            }catch (ArrayIndexOutOfBoundsException ae){
+                errorAndExit("Missing port number!");
+            }catch (NumberFormatException ex) {
+                errorAndExit("Port must be an integer!");
+            }
+        }
+
+        //Check to make sure that if host is specified, then a port is as well and vice versa
+        if(host == null && port != 0){
+            errorAndExit("Need to specify host with the port!");
+        } else if (host != null && port == -1){
+            errorAndExit("Need to specify port with the host!");
+        }
+
+        //If the startIndex is less than args length - 1, that means that there's only one argument
+        //left, so it must be a search for a customer's phone bill
+        if(startIndex == args.length - 1){
+            customer = args[startIndex];
+            if(customer == null){
+                errorAndExit("Missing customer name!");
+            }
+            toGetPhoneBill = true;
+        }
+        else{
+            //Get the remaining commands from the args array
+            for(int i = startIndex; i < args.length; i++){
+                //If the command line argument starts with "-", then it's an invalid command
+                if(args[i].startsWith("-")){
+                    errorAndExit("Invalid command: " + args[i]);
+                }
+                if (customer == null){
+                    customer = args[i];
+                } else if (callerNum == null && !toSearch){
+                    callerNum = args[i];
+                } else if (calleeNum == null && !toSearch){
+                    calleeNum = args[i];
+                } else if (startDate == null) {
+                    startDate = args[i];
+                } else if (startTime == null) {
+                    startTime = args[i];
+                } else if (startMarker == null){
+                    startMarker = args[i];
+                } else if (endDate == null){
+                    endDate = args[i];
+                } else if (endTime == null) {
+                    endTime = args[i];
+                } else if (endMarker == null) {
+                    endMarker = args[i];
+                } else{
+                    errorAndExit("Too many arguments entered");
+                }
+            }
+
+            if (customer == null){
+                errorAndExit("Missing customer name");
             } else if (callerNum == null && !toSearch){
-                callerNum = args[i];
-            } else if (calleeNum == null && !toSearch){
-                calleeNum = args[i];
+                errorAndExit("Missing caller phone number");
+            } else if (calleeNum == null && !toSearch) {
+                errorAndExit("Missing callee phone number");
             } else if (startDate == null) {
-                startDate = args[i];
+                errorAndExit("Missing start date of the phone call");
             } else if (startTime == null) {
-                startTime = args[i];
-            } else if (startMarker == null){
-                startMarker = args[i];
+                errorAndExit("Missing start time of the phone call");
+            } else if (startMarker == null) {
+                errorAndExit("Missing am/pm marker for start time of phone call");
             } else if (endDate == null){
-                endDate = args[i];
+                errorAndExit("Missing end date of the phone call");
             } else if (endTime == null) {
-                endTime = args[i];
+                errorAndExit("Missing end time of the phone call");
             } else if (endMarker == null) {
-                endMarker = args[i];
-            } else{
-                errorAndExit("Too many arguments entered");
+                errorAndExit("Missing am/pm marker for end time of phone call");
             }
         }
 
-        if (customer == null && !toSearch){
-            errorAndExit("Missing customer name");
-        } else if (callerNum == null && !toSearch){
-            errorAndExit("Missing caller phone number");
-        } else if (calleeNum == null && !toSearch) {
-            errorAndExit("Missing callee phone number");
-        } else if (startDate == null) {
-            errorAndExit("Missing start date of the phone call");
-        } else if (startTime == null) {
-            errorAndExit("Missing start time of the phone call");
-        } else if (startMarker == null) {
-            errorAndExit("Missing am/pm marker for start time of phone call");
-        } else if (endDate == null){
-            errorAndExit("Missing end date of the phone call");
-        } else if (endTime == null) {
-            errorAndExit("Missing end time of the phone call");
-        } else if (endMarker == null) {
-            errorAndExit("Missing am/pm marker for end time of phone call");
+        try{
+            //Ensure that host and port have been set before attempting to make request against server
+            if(host != null && port != -1){
+                PhoneBillRestClient client = new PhoneBillRestClient(host, port);
+                HttpRequestHelper.Response response;
+                //Search request
+                if(toSearch){
+                    response = client.searchPhoneBill(customer, startDate + " " + startTime + " " + startMarker, endDate + " " + endTime + " " + endMarker);
+                    checkResponseCode(HttpServletResponse.SC_OK, response);
+                    System.out.println(response.getContent());
+                }
+                else if (toGetPhoneBill){ //Get all phone calls of specific customer
+                    response = client.getPrettyPhoneBill(customer);
+                    checkResponseCode(HttpServletResponse.SC_OK, response);
+                    System.out.println(response.getContent());
+                }
+                else{ //Add new phone call
+                    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
+                    Date start = null;
+                    Date end = null;
+                    try {
+                        //Attempt to parse Date object from the given time inputs provided by the user
+                        try {
+                            start = sdf.parse(startDate + " " + startTime + " " + startMarker);
+                        } catch (ParseException pe) {
+                            errorAndExit("Invalid start time! Please use AM/PM Date time format");
+                        }
+
+                        try {
+                            end = sdf.parse(endDate + " " + endTime + " " + endMarker);
+                        } catch (ParseException pe) {
+                            errorAndExit("Invalid end time! Please use AM/PM Date time format");
+                        }
+
+                        //Attempt to create a new PhoneCall. Validation of the callerNum and calleeNum will be handled in constructor
+                        toAdd = new PhoneCall(callerNum, calleeNum, start, end);
+
+                        //Print the newly added phone call
+                        if(toPrint){
+                            System.out.println(String.join(
+                                System.getProperty("line.separator"),
+                                "Customer: " + customer,
+                                toAdd.toString()
+                                )
+                            );
+                        }
+                        //Make POST request with new phone call data
+                        response = client.addPhoneCall(customer, toAdd);
+                        checkResponseCode(HttpServletResponse.SC_OK, response);
+                        System.out.println("New phone call added to bill for customer: " + customer);
+
+                    } catch (Exception e) {
+                        errorAndExit(e.getMessage());
+                    }
+                }
+            }
+            System.exit(0);
+        } catch(IllegalArgumentException | IOException | ArrayIndexOutOfBoundsException e){
+            errorAndExit(e.getMessage());
         }
-
-
-
-        /*
-        if (hostName == null) {
-            usage( MISSING_ARGS );
-
-        } else if ( portString == null) {
-            usage( "Missing port" );
-        }
-
-        int port;
-        try {
-            port = Integer.parseInt( portString );
-            
-        } catch (NumberFormatException ex) {
-            usage("Port \"" + portString + "\" must be an integer");
-            return;
-        }
-
-        PhoneBillRestClient client = new PhoneBillRestClient(hostName, port);
-
-
-        String message;
-        try {
-            // Print all word/definition pairs
-            String customerName = "Customer";
-            message = client.getPrettyPhoneBill(customerName);
-
-        } catch ( IOException ex ) {
-            error("While contacting server: " + ex);
-            return;
-        }
-
-        System.out.println(message);
-        */
-        System.exit(0);
     }
 
     /**
@@ -208,17 +292,13 @@ public class Project4 {
     private static void checkResponseCode( int code, HttpRequestHelper.Response response )
     {
         if (response.getCode() != code) {
-            error(String.format("Expected HTTP code %d, got code %d.\n\n%s", code,
-                                response.getCode(), response.getContent()));
+            errorAndExit(String.join(
+                System.getProperty("line.separator"),
+                String.format("Expected HTTP code %d, got code %d.",code, response.getCode()),
+                "",
+                String.format("%s", response.getContent())
+            ));
         }
-    }
-
-    private static void error( String message )
-    {
-        PrintStream err = System.err;
-        err.println("** " + message);
-
-        System.exit(1);
     }
 
     /**
@@ -256,7 +336,6 @@ public class Project4 {
     private static void errorAndExit(String message){
         PrintStream err = System.err;
         err.println("** " + message);
-        err.println();
         err.println(usage());
         System.exit(1);
     }
