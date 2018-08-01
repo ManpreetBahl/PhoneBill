@@ -23,9 +23,13 @@ public class Project4IT extends InvokeMainTestCase {
     private static final String PORT = System.getProperty("http.port", "8080");
 
     @Test
-    public void test0RemoveAllMappings() throws IOException {
-      PhoneBillRestClient client = new PhoneBillRestClient(HOSTNAME, Integer.parseInt(PORT));
-      client.removeAllPhoneBills();
+    public void test0RemoveAllMappings(){
+        try{
+            PhoneBillRestClient client = new PhoneBillRestClient(HOSTNAME, Integer.parseInt(PORT));
+            client.removeAllPhoneBills();
+        }catch (IOException e){
+            System.err.println(e.getMessage());
+        }
     }
 
     @Test
@@ -184,6 +188,54 @@ public class Project4IT extends InvokeMainTestCase {
             "** Expected HTTP code 200, got code 409.",
             "",
             "Start time cannot be after end time!",
+            "usage: java edu.pdx.cs410J.manpreet.Project4 [options] <args>",
+            "args are (in this order):",
+            "  customer               Person whose phone bill we’re modeling",
+            "  callerNumber           Phone number of caller",
+            "  calleeNumber           Phone number of person who was called",
+            "  startTime              Date and time (am/pm) call began",
+            "  endTime                Date and time (am/pm) call ended",
+            "options are (options may appear in any order):",
+            "  -host hostname         Host computer on which the server runs",
+            "  -port port             Port on which the server is listening",
+            "  -search                Phone calls should be searched for",
+            "  -print                 Prints a description of the new phone call",
+            "  -README                Prints a README for this project and exits"
+        )));
+    }
+
+    @Test
+    public void test93FakeHostName(){
+        String customer = "NoCustomer";
+        MainMethodResult result = invokeMain( Project4.class, "-host", "muhahhahahahahahaa", "-port", PORT, customer);
+        assertThat(result.getExitCode(), equalTo(1));
+        assertThat(result.getTextWrittenToStandardError(), containsString(String.join(
+            System.getProperty("line.separator"),
+            "** Unable to connect to the server",
+            "usage: java edu.pdx.cs410J.manpreet.Project4 [options] <args>",
+            "args are (in this order):",
+            "  customer               Person whose phone bill we’re modeling",
+            "  callerNumber           Phone number of caller",
+            "  calleeNumber           Phone number of person who was called",
+            "  startTime              Date and time (am/pm) call began",
+            "  endTime                Date and time (am/pm) call ended",
+            "options are (options may appear in any order):",
+            "  -host hostname         Host computer on which the server runs",
+            "  -port port             Port on which the server is listening",
+            "  -search                Phone calls should be searched for",
+            "  -print                 Prints a description of the new phone call",
+            "  -README                Prints a README for this project and exits"
+        )));
+    }
+
+    @Test
+    public void test94BadPortNumber(){
+        String customer = "NoCustomer";
+        MainMethodResult result = invokeMain( Project4.class, "-host", HOSTNAME, "-port", "923123", customer);
+        assertThat(result.getExitCode(), equalTo(1));
+        assertThat(result.getTextWrittenToStandardError(), containsString(String.join(
+            System.getProperty("line.separator"),
+            "** Port number can't be greater than 65535!",
             "usage: java edu.pdx.cs410J.manpreet.Project4 [options] <args>",
             "args are (in this order):",
             "  customer               Person whose phone bill we’re modeling",

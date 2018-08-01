@@ -8,6 +8,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.ConnectException;
+import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -80,9 +81,6 @@ public class Project4 {
         //The PhoneCall object to add
         PhoneCall toAdd;
 
-        //The PhoneBill object
-        PhoneBill bill;
-
         //Is the command a search?
         boolean toSearch = false;
 
@@ -148,6 +146,9 @@ public class Project4 {
             try{
                 startIndex += 2;
                 port = Integer.parseInt(args[Arrays.asList(args).indexOf("-port") + 1]);
+                if(port > 65535){
+                    errorAndExit("Port number can't be greater than 65535!");
+                }
             }catch (ArrayIndexOutOfBoundsException ae){
                 errorAndExit("Missing port number!");
             }catch (NumberFormatException ex) {
@@ -222,23 +223,21 @@ public class Project4 {
             }
         }
 
-        try{
+        try {
             //Ensure that host and port have been set before attempting to make request against server
-            if(host != null && port != -1){
+            if (host != null && port != -1) {
                 PhoneBillRestClient client = new PhoneBillRestClient(host, port);
                 HttpRequestHelper.Response response;
                 //Search request
-                if(toSearch){
+                if (toSearch) {
                     response = client.searchPhoneBill(customer, startDate + " " + startTime + " " + startMarker, endDate + " " + endTime + " " + endMarker);
                     checkResponseCode(HttpServletResponse.SC_OK, response);
                     System.out.println(response.getContent());
-                }
-                else if (toGetPhoneBill){ //Get all phone calls of specific customer
+                } else if (toGetPhoneBill) { //Get all phone calls of specific customer
                     response = client.getPrettyPhoneBill(customer);
                     checkResponseCode(HttpServletResponse.SC_OK, response);
                     System.out.println(response.getContent());
-                }
-                else{ //Add new phone call
+                } else { //Add new phone call
                     SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
                     Date start = null;
                     Date end = null;
@@ -260,7 +259,7 @@ public class Project4 {
                         toAdd = new PhoneCall(callerNum, calleeNum, start, end);
 
                         //Print the newly added phone call
-                        if(toPrint){
+                        if (toPrint) {
                             System.out.println(String.join(
                                 System.getProperty("line.separator"),
                                 "Customer: " + customer,
@@ -279,6 +278,8 @@ public class Project4 {
                 }
             }
             System.exit(0);
+        } catch (ConnectException | UnknownHostException e){
+            errorAndExit("Unable to connect to the server");
         } catch(IllegalArgumentException | IOException | ArrayIndexOutOfBoundsException e){
             errorAndExit(e.getMessage());
         }

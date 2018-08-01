@@ -34,10 +34,15 @@ public class PhoneBillServlet extends HttpServlet
   private PhoneBill pb = null;
 
   /**
-   * Handles an HTTP GET request from a client by writing the definition of the
-   * word specified in the "word" HTTP parameter to the HTTP response.  If the
-   * "word" parameter is not specified, all of the entries in the dictionary
-   * are written to the HTTP response.
+   * Handles both variations of GET requests. The first variation is where only the "customer"
+   * parameter is specified, thus resulting in a response of all phone calls for that customer
+   * in a pretty text format. The second variation is where "customer", "startTime", and "endTime"
+   * are specified in the parameters. This means to search for all phone calls for that customer
+   * between the time ranges.
+   * @param request The HTTP request object containing the GET parameters.
+   * @param response The HTTP response after processing the request.
+   * @throws ServletException Throws any ServletExceptions that may occur.
+   * @throws IOException Throws any IOException that may happen when using the PrintWriter.
    */
   @Override
   protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
@@ -109,15 +114,18 @@ public class PhoneBillServlet extends HttpServlet
   }
 
   /**
-   * Handles an HTTP POST request by storing the dictionary entry for the
-   * "word" and "definition" request parameters.  It writes the dictionary
-   * entry to the HTTP response.
+   * Handles the POST request to add a <code>PhoneCall</code> to a <code>PhoneBill</code>.
+   * @param request The HTTP request object.
+   * @param response The HTTP response object.
+   * @throws ServletException Throws any ServletExceptions that may occur.
+   * @throws IOException Throws any IOException that may happen when using the PrintWriter.
    */
   @Override
   protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
   {
     response.setContentType( "text/plain" );
 
+    //Check all parameters to make sure they are present before adding them to PhoneBill
     String customer = getParameter(CUSTOMER_PARAMETER, request );
     if (customer == null) {
       missingRequiredParameter(response, CUSTOMER_PARAMETER);
@@ -147,6 +155,7 @@ public class PhoneBillServlet extends HttpServlet
       return;
     }
 
+    //Parse the dates to make sure they are in the required format
     SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
     Date start = null;
     Date end = null;
@@ -157,8 +166,10 @@ public class PhoneBillServlet extends HttpServlet
       response.sendError(HttpServletResponse.SC_BAD_REQUEST, "The datetime entered is malformed!");
     }
 
+    //Create a new PhoneCall (which includes checks of its own)
     PhoneCall call = new PhoneCall(caller, callee, start, end);
 
+    //Get the customer's Phone Bill. If none exist, create one and add the PhoneCall to it.
     PhoneBill bill = getPhoneBill(customer);
     if (bill == null) {
       bill = new PhoneBill(customer);

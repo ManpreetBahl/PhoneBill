@@ -42,7 +42,6 @@ public class PhoneBillRestClient extends HttpRequestHelper
     return get(this.url, "customer", customerName);
   }
 
-
   /**
    * This method searches for phone calls for a customer within a given time interval
    * @param customerName The name of the customer.
