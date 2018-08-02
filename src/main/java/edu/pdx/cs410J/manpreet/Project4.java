@@ -293,12 +293,7 @@ public class Project4 {
     private static void checkResponseCode( int code, HttpRequestHelper.Response response )
     {
         if (response.getCode() != code) {
-            errorAndExit(String.join(
-                System.getProperty("line.separator"),
-                String.format("Expected HTTP code %d, got code %d.",code, response.getCode()),
-                "",
-                String.format("%s", response.getContent())
-            ));
+            errorAndExit(String.format("%s", response.getContent()));
         }
     }
 

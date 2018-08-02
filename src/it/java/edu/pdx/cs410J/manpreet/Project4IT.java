@@ -185,8 +185,6 @@ public class Project4IT extends InvokeMainTestCase {
         assertThat(result.getExitCode(), equalTo(1));
         assertThat(result.getTextWrittenToStandardError(), containsString(String.join(
             System.getProperty("line.separator"),
-            "** Expected HTTP code 200, got code 409.",
-            "",
             "Start time cannot be after end time!",
             "usage: java edu.pdx.cs410J.manpreet.Project4 [options] <args>",
             "args are (in this order):",

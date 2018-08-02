@@ -56,7 +56,7 @@ public class PhoneBillServlet extends HttpServlet
 
     //Make sure that at least the customer name is specified
     if(customer == null){
-      missingRequiredParameter(response, customer);
+      missingRequiredParameter(response, CUSTOMER_PARAMETER);
     }
 
     //First variation of GET requests where only customer name is specified. Gets all phone calls
@@ -72,10 +72,9 @@ public class PhoneBillServlet extends HttpServlet
         response.setStatus(HttpServletResponse.SC_OK);
       }
     }
-
     //Second variation of GET request where all 3 parameters are specified. Gets all phone calls for
     //that customer within the specified range.
-    if(customer != null && startTime != null && endTime != null){
+    else if(customer != null && startTime != null && endTime != null){
       SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
       Date start = null;
       Date end = null;
@@ -110,6 +109,10 @@ public class PhoneBillServlet extends HttpServlet
           response.setStatus(HttpServletResponse.SC_OK);
         }
       }
+    }
+    else{
+      //The GET request sent is invalid
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unable to process malformed request");
     }
   }
 
@@ -166,8 +169,13 @@ public class PhoneBillServlet extends HttpServlet
       response.sendError(HttpServletResponse.SC_BAD_REQUEST, "The datetime entered is malformed!");
     }
 
-    //Create a new PhoneCall (which includes checks of its own)
-    PhoneCall call = new PhoneCall(caller, callee, start, end);
+    PhoneCall call = null;
+    try{
+      //Create a new PhoneCall (which includes checks of its own)
+      call = new PhoneCall(caller, callee, start, end);
+    }catch(Exception e){
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST,"Encountered error when creating phone bill: " + e.getMessage());
+    }
 
     //Get the customer's Phone Bill. If none exist, create one and add the PhoneCall to it.
     PhoneBill bill = getPhoneBill(customer);
