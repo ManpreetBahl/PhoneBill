@@ -174,7 +174,7 @@ public class PhoneBillServlet extends HttpServlet
       //Create a new PhoneCall (which includes checks of its own)
       call = new PhoneCall(caller, callee, start, end);
     }catch(Exception e){
-      response.sendError(HttpServletResponse.SC_BAD_REQUEST,"Encountered error when creating phone bill: " + e.getMessage());
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST,"Encountered error when adding phone call: " + e.getMessage());
     }
 
     //Get the customer's Phone Bill. If none exist, create one and add the PhoneCall to it.
