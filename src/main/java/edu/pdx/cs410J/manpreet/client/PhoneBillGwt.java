@@ -4,13 +4,27 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Style.FontWeight;
+import com.google.gwt.dom.client.Style.TextAlign;
+import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.UmbrellaException;
+import com.google.gwt.i18n.shared.DateTimeFormat;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.RootPanel;
+
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import java.util.Collection;
@@ -24,7 +38,12 @@ public class PhoneBillGwt implements EntryPoint {
   private final Alerter alerter;
   private final PhoneBillServiceAsync phoneBillService;
   private final Logger logger;
-  
+
+  private TextBox customer;
+  private TextBox callee;
+  private TextBox caller;
+  private TextBox startTime;
+  private TextBox endTime;
 
   @VisibleForTesting
   Button showPhoneBillButton;
@@ -82,43 +101,111 @@ public class PhoneBillGwt implements EntryPoint {
     return throwable;
   }
 
-  private void addWidgets(VerticalPanel panel) {
-    showPhoneBillButton = new Button("Show Phone Bill");
-    showPhoneBillButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent clickEvent) {
-        showPhoneBill();
+  /**
+   * This creates the navigation bar for the application. Currently, the user can view
+   * the README information in an alert box when clicked.
+   * @return MenuBar panel
+   */
+  private MenuBar navbar(){
+    // Make a command that we will execute from all leaves.
+    Command README = () -> Window.alert("Assignment: Project 5\n"+
+        "Author: Manpreet Bahl\n"+
+        "This project expands the phonebill application that has been developed throughout"+
+        "the term into a Rich Internet Application (RIA). This project utilizes Google Web"+
+        "Toolkit (GWT) to develop the application in Java and having it compile to HTML,"+
+        "JavaScript, CSS while allowing the developer to utilize the pros of Java."
+    );
+    MenuBar help = new MenuBar();
+    help.addItem("README", README);
+
+    // Make a new menu bar, adding a few cascading menus to it.
+    MenuBar menu = new MenuBar();
+    menu.addItem("Help", help);
+
+    return menu;
+  }
+
+  private VerticalPanel addPhoneCallForm(){
+    Label header = new Label("Add a new phone call");
+    header.getElement().getStyle().setMarginTop(1, Unit.PCT);
+    header.getElement().getStyle().setMarginBottom(0.5, Unit.PCT);
+    header.getElement().getStyle().setTextAlign(TextAlign.CENTER);
+    header.getElement().getStyle().setFontSize(2, Unit.EM);
+    header.getElement().getStyle().setFontWeight(FontWeight.BOLD);
+
+    //Customer Name
+    Label customerLabel = new Label("Name");
+    customer = new TextBox();
+    customer.getElement().setAttribute("placeholder", "Please enter your name");
+    customer.getElement().setAttribute("style", "width:100%;");
+
+    //Callee Phone Number
+    Label calleeLabel = new Label("Callee Phone Number");
+    calleeLabel.getElement().getStyle().setMarginTop(1, Unit.PCT);
+    callee = new TextBox();
+    callee.getElement().setAttribute("placeholder", "Please enter callee number");
+    callee.getElement().getStyle().setWidth(100, Unit.PCT);
+
+
+    //Caller Phone Number
+    Label callerLabel = new Label("Caller Phone Number");
+    callerLabel.getElement().getStyle().setMarginTop(1, Unit.PCT);
+    caller = new TextBox();
+    caller.getElement().setAttribute("placeholder", "Please enter caller number");
+    caller.getElement().getStyle().setWidth(100, Unit.PCT);
+
+    //Start Time
+    Label startTimeLabel = new Label("Start Time");
+    startTimeLabel.getElement().getStyle().setMarginTop(1, Unit.PCT);
+    startTime = new TextBox();
+    startTime.getElement().setAttribute("placeholder", "Please enter start time in MM/dd/yyyy hh:mm a");
+    startTime.getElement().getStyle().setWidth(100, Unit.PCT);
+    startTime.addChangeHandler(changeEvent -> {
+      String text = startTime.getText();
+      DateTimeFormat dtf = DateTimeFormat.getFormat("MM/dd/yyyy hh:mm a");
+      try{
+        dtf.parse(text);
+      }catch (IllegalArgumentException ie){
+        alerter.alert("Invalid start date: " + text);
       }
     });
 
-    showUndeclaredExceptionButton = new Button("Show undeclared exception");
-    showUndeclaredExceptionButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent clickEvent) {
-        showUndeclaredException();
+    //End Time
+    Label endTimeLabel = new Label("End Time");
+    endTimeLabel.getElement().getStyle().setMarginTop(1, Unit.PCT);
+    endTime = new TextBox();
+    endTime.getElement().setAttribute("placeholder", "Please enter end time in MM/dd/yyyy hh:mm a");
+    endTime.getElement().getStyle().setWidth(100, Unit.PCT);
+    endTime.addChangeHandler(changeEvent -> {
+      String text = endTime.getText();
+      DateTimeFormat dtf = DateTimeFormat.getFormat("MM/dd/yyyy hh:mm a");
+      try{
+        dtf.parse(text);
+      }catch (IllegalArgumentException ie){
+        alerter.alert("Invalid end date: " + text);
       }
     });
 
-    showDeclaredExceptionButton = new Button("Show declared exception");
-    showDeclaredExceptionButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent clickEvent) {
-        showDeclaredException();
-      }
-    });
+    //Submit Button Form
+    Button submit = new Button("Add Phone Call");
+    submit.getElement().getStyle().setMarginTop(1, Unit.PCT);
 
-    showClientSideExceptionButton= new Button("Show client-side exception");
-    showClientSideExceptionButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent clickEvent) {
-        throwClientSideException();
-      }
-    });
+    VerticalPanel vp = new VerticalPanel();
+    vp.getElement().setAttribute("style", "width:100%;padding-left:10%;padding-right:10%");
 
-    panel.add(showPhoneBillButton);
-    panel.add(showUndeclaredExceptionButton);
-    panel.add(showDeclaredExceptionButton);
-    panel.add(showClientSideExceptionButton);
+    vp.add(header);
+    vp.add(customerLabel);
+    vp.add(customer);
+    vp.add(calleeLabel);
+    vp.add(callee);
+    vp.add(callerLabel);
+    vp.add(caller);
+    vp.add(startTimeLabel);
+    vp.add(startTime);
+    vp.add(endTimeLabel);
+    vp.add(endTime);
+
+    return vp;
   }
 
   private void throwClientSideException() {
@@ -192,13 +279,11 @@ public class PhoneBillGwt implements EntryPoint {
     });
   }
 
-
   private void setupUI() {
     RootPanel rootPanel = RootPanel.get();
-    VerticalPanel panel = new VerticalPanel();
-    rootPanel.add(panel);
-
-    addWidgets(panel);
+    rootPanel.add(this.navbar());
+    rootPanel.add(addPhoneCallForm());
+    rootPanel.add(new HTML("<hr  style=\"width:100%;\" />"));
   }
 
   private void setUpUncaughtExceptionHandler() {
