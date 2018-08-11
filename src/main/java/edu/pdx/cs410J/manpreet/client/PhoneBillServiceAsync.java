@@ -1,6 +1,7 @@
 package edu.pdx.cs410J.manpreet.client;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import java.util.Date;
 
 /**
  * The client-side interface to the phone bill service
@@ -10,7 +11,11 @@ public interface PhoneBillServiceAsync {
   /**
    * Return the current date/time on the server
    */
-  void getPhoneBill(AsyncCallback<PhoneBill> async);
+  void getPhoneBill(String name, AsyncCallback<PhoneBill> async);
+
+  void addPhoneCall(String name, PhoneCall call, AsyncCallback<PhoneBill> async);
+
+  void searchPhoneBill(String name, Date start, Date end, AsyncCallback<PhoneBill> async);
 
   /**
    * Always throws an exception so that we can see how to handle uncaught

@@ -7,20 +7,17 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style.FontWeight;
 import com.google.gwt.dom.client.Style.TextAlign;
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.UmbrellaException;
 import com.google.gwt.i18n.shared.DateTimeFormat;
+import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.RootPanel;
 
@@ -28,6 +25,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,6 +43,8 @@ public class PhoneBillGwt implements EntryPoint {
   private TextBox startTime;
   private TextBox endTime;
 
+  private FlexTable addResults;
+
   @VisibleForTesting
   Button showPhoneBillButton;
 
@@ -58,12 +58,7 @@ public class PhoneBillGwt implements EntryPoint {
   Button showClientSideExceptionButton;
   
   public PhoneBillGwt() {
-    this(new Alerter() {
-      @Override
-      public void alert(String message) {
-        Window.alert(message);
-      }
-    });
+    this(Window::alert);
   }
 
   @VisibleForTesting
@@ -99,6 +94,23 @@ public class PhoneBillGwt implements EntryPoint {
     }
 
     return throwable;
+  }
+
+  private void checkPhoneNumber(String phoneNum){
+    RegExp pattern = RegExp.compile("^[0-9]{3}-[0-9]{3}-[0-9]{4}$");
+    com.google.gwt.regexp.shared.MatchResult result = pattern.exec(phoneNum);
+
+    if (result == null){
+      throw new IllegalArgumentException();
+    }
+  }
+
+  private FlexTable newTable(){
+    FlexTable table = new FlexTable();
+    table.setBorderWidth(3);
+    table.setText(0,0, "No phone calls to display");
+    table.setWidth("100%");
+    return table;
   }
 
   /**
@@ -143,7 +155,7 @@ public class PhoneBillGwt implements EntryPoint {
     Label calleeLabel = new Label("Callee Phone Number");
     calleeLabel.getElement().getStyle().setMarginTop(1, Unit.PCT);
     callee = new TextBox();
-    callee.getElement().setAttribute("placeholder", "Please enter callee number");
+    callee.getElement().setAttribute("placeholder", "Please enter callee number (XXX-XXX-XXXX)");
     callee.getElement().getStyle().setWidth(100, Unit.PCT);
 
 
@@ -151,7 +163,7 @@ public class PhoneBillGwt implements EntryPoint {
     Label callerLabel = new Label("Caller Phone Number");
     callerLabel.getElement().getStyle().setMarginTop(1, Unit.PCT);
     caller = new TextBox();
-    caller.getElement().setAttribute("placeholder", "Please enter caller number");
+    caller.getElement().setAttribute("placeholder", "Please enter caller number (XXX-XXX-XXXX)");
     caller.getElement().getStyle().setWidth(100, Unit.PCT);
 
     //Start Time
@@ -189,21 +201,109 @@ public class PhoneBillGwt implements EntryPoint {
     //Submit Button Form
     Button submit = new Button("Add Phone Call");
     submit.getElement().getStyle().setMarginTop(1, Unit.PCT);
+    submit.addClickHandler(changeEvent ->{
+      //Check callee phone number
+      try{
+        checkPhoneNumber(callee.getText());
+      }catch (IllegalArgumentException ie){
+        this.alerter.alert("Callee phone number is malformed! Phone numbers have the form nnn-nnn-nnnn where n is a number 0-9.");
+        return;
+      }
+
+      //Check caller phone number
+      try{
+        checkPhoneNumber(caller.getText());
+      }catch (IllegalArgumentException ie){
+        this.alerter.alert("Caller phone number is malformed! Phone numbers have the form nnn-nnn-nnnn where n is a number 0-9.");
+        return;
+      }
+
+      //Check Start Date
+      DateTimeFormat dtf = DateTimeFormat.getFormat("MM/dd/yyyy hh:mm a");
+      Date start;
+      try{
+        start = dtf.parse(startTime.getText());
+      }catch (IllegalArgumentException ie){
+        this.alerter.alert("Invalid start date! Date format must be in: MM/dd/yyyy hh:mm a");
+        return;
+      }
+
+      //Check End Date
+      Date end;
+      try{
+        end = dtf.parse(endTime.getText());
+      }catch (IllegalArgumentException ie){
+        this.alerter.alert("Invalid end date! Date format must be in: MM/dd/yyyy hh:mm a");
+        return;
+      }
+
+      //Create PhoneCall object from user input
+      PhoneCall toAdd;
+      try{
+        toAdd = new PhoneCall(caller.getText(), callee.getText(), start, end);
+      }catch(Exception e){
+        System.err.println("HELLO THERE!");
+        this.alerter.alert(e.getMessage());
+        return;
+      }
+
+      //Call the service and pass the information
+      this.phoneBillService.addPhoneCall(customer.getText(), toAdd, new AsyncCallback<PhoneBill>(){
+
+        @Override
+        public void onFailure(Throwable ex) {
+          alertOnException(ex);
+        }
+
+        @Override
+        public void onSuccess(PhoneBill phoneBill) {
+          addResults.removeAllRows();
+          addResults.setText(0,0, "Customer: " + customer.getText());
+
+          FlexCellFormatter fcf = addResults.getFlexCellFormatter();
+          fcf.setColSpan(0,0,5);
+
+          addResults.setText(1,0, "Caller");
+          addResults.setText(1,1, "Callee");
+          addResults.setText(1,2, "Start Time");
+          addResults.setText(1,3, "End Time");
+          addResults.setText(1,4, "Duration");
+
+          int index = 2;
+          for(PhoneCall pc : phoneBill.getPhoneCalls()){
+            addResults.setText(index, 0, pc.getCaller());
+            addResults.setText(index, 1, pc.getCallee());
+            addResults.setText(index, 2, pc.getStartTimeString());
+            addResults.setText(index, 3, pc.getEndTimeString());
+            addResults.setText(index, 4, Long.toString(pc.duration()));
+            ++index;
+          }
+        }
+      });
+    });
+
+
+    Label tableResults = new Label("Results: ");
+    tableResults.getElement().getStyle().setMarginTop(1, Unit.PCT);
+    this.addResults = newTable();
 
     VerticalPanel vp = new VerticalPanel();
     vp.getElement().setAttribute("style", "width:100%;padding-left:10%;padding-right:10%");
 
     vp.add(header);
     vp.add(customerLabel);
-    vp.add(customer);
+    vp.add(this.customer);
     vp.add(calleeLabel);
-    vp.add(callee);
+    vp.add(this.callee);
     vp.add(callerLabel);
-    vp.add(caller);
+    vp.add(this.caller);
     vp.add(startTimeLabel);
-    vp.add(startTime);
+    vp.add(this.startTime);
     vp.add(endTimeLabel);
-    vp.add(endTime);
+    vp.add(this.endTime);
+    vp.add(submit);
+    vp.add(tableResults);
+    vp.add(this.addResults);
 
     return vp;
   }
@@ -244,6 +344,7 @@ public class PhoneBillGwt implements EntryPoint {
   }
 
   private void showPhoneBill() {
+    /*
     logger.info("Calling getPhoneBill");
     phoneBillService.getPhoneBill(new AsyncCallback<PhoneBill>() {
 
@@ -263,6 +364,7 @@ public class PhoneBillGwt implements EntryPoint {
         alerter.alert(sb.toString());
       }
     });
+    */
   }
   
   @Override

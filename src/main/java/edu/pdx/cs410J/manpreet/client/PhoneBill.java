@@ -24,7 +24,7 @@ public class PhoneBill extends AbstractPhoneBill<PhoneCall> {
    * the client and the server), it must have a zero-argument constructor.
    */
   public PhoneBill() {
-
+    this.customer = null;
   }
 
   /**
@@ -32,7 +32,7 @@ public class PhoneBill extends AbstractPhoneBill<PhoneCall> {
    *
    * @param customer The name of the customer for the bill
    */
-  PhoneBill(String customer){
+  public PhoneBill(String customer){
     this.customer = customer;
   }
 

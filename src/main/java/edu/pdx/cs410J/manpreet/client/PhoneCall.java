@@ -43,7 +43,7 @@ public class PhoneCall extends AbstractPhoneCall implements Comparable<PhoneCall
    * @param startTime Date time when call began (am/pm)
    * @param endTime Date time when call ended (am/pm)
    */
-  PhoneCall(String callerNumber, String calleeNumber, Date startTime, Date endTime){
+  public PhoneCall(String callerNumber, String calleeNumber, Date startTime, Date endTime){
     //Check to make sure start time is before end time
     if (startTime.after(endTime)) {
       throw new IllegalArgumentException("Start time can't be after end time!");
