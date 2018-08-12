@@ -7,6 +7,7 @@ import com.google.gwt.event.shared.UmbrellaException;
 import com.google.gwt.junit.client.GWTTestCase;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Button;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -20,6 +21,7 @@ public class PhoneBillGwtIT extends GWTTestCase {
     return "edu.pdx.cs410J.manpreet.PhoneBillIntegrationTests";
   }
 
+  @Ignore
   @Test
   public void testClickingShowPhoneBillButtonAlertsWithPhoneBillInformation() {
     final CapturingAlerter alerter = new CapturingAlerter();
@@ -49,6 +51,7 @@ public class PhoneBillGwtIT extends GWTTestCase {
     delayTestFinish(1000);
   }
 
+  @Ignore
   @Test
   public void testClickingShowUndeclaredExceptionButtonAlertsWithExpectedMessage() {
     final CapturingAlerter alerter = new CapturingAlerter();
@@ -79,6 +82,7 @@ public class PhoneBillGwtIT extends GWTTestCase {
     delayTestFinish(1000);
   }
 
+  @Ignore
   @Test
   public void testClickingShowDeclaredExceptionButtonAlertsWithExpectedMessage() {
     final CapturingAlerter alerter = new CapturingAlerter();
@@ -109,6 +113,7 @@ public class PhoneBillGwtIT extends GWTTestCase {
     delayTestFinish(1000);
   }
 
+  @Ignore
   @Test
   public void testClickingShowClientSideExceptionButtonAlertsWithExpectedMessage() {
     final CapturingAlerter alerter = new CapturingAlerter();

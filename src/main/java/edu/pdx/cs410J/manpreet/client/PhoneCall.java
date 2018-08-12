@@ -133,10 +133,10 @@ public class PhoneCall extends AbstractPhoneCall implements Comparable<PhoneCall
     } else if (this.startTime.after(other.getStartTime())) {
       return 1;
     } else{
-      int callerPhone1 = Integer.parseInt(this.callerNumber.replace("-", ""));
-      int callerPhone2 = Integer.parseInt(other.getCaller().replace("-", ""));
+      long callerPhone1 = Long.parseLong(this.callerNumber.replace("-", ""));
+      long callerPhone2 = Long.parseLong(other.getCaller().replace("-", ""));
 
-      return Integer.compare(callerPhone1,callerPhone2);
+      return Long.compare(callerPhone1,callerPhone2);
     }
 
   }

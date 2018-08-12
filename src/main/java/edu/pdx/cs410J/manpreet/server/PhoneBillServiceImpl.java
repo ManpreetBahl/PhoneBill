@@ -4,6 +4,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import edu.pdx.cs410J.manpreet.client.PhoneBill;
 import edu.pdx.cs410J.manpreet.client.PhoneCall;
 import edu.pdx.cs410J.manpreet.client.PhoneBillService;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 import java.util.HashMap;
@@ -34,7 +35,21 @@ public class PhoneBillServiceImpl extends RemoteServiceServlet implements PhoneB
 
   @Override
   public PhoneBill searchPhoneBill(String name, Date start, Date end){
-    return null;
+    PhoneBill customer = this.getPhoneBill(name);
+    if (customer == null){
+      return null;
+    }
+    Collection<PhoneCall> callsBetweenRange = customer.getPhoneCallsBetweenDate(start, end);
+    if (callsBetweenRange.size() == 0){
+      return null;
+    }
+    else{
+      PhoneBill search = new PhoneBill(name);
+      for(PhoneCall pc : callsBetweenRange){
+        search.addPhoneCall(pc);
+      }
+      return search;
+    }
   }
 
   @Override
