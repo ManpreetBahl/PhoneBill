@@ -68,6 +68,10 @@ public class PhoneBillGwt implements EntryPoint {
     Logger.getLogger("").setLevel(Level.INFO);  // Quiet down the default logging
   }
 
+  /**
+   * This method alerts the user when an Exception occurs
+   * @param throwable The throwable exception
+   */
   private void alertOnException(Throwable throwable) {
     Throwable unwrapped = unwrapUmbrellaException(throwable);
     StringBuilder sb = new StringBuilder();
@@ -83,6 +87,11 @@ public class PhoneBillGwt implements EntryPoint {
     this.alerter.alert(sb.toString());
   }
 
+  /**
+   * This method unwraps ah Umbrella exception
+   * @param throwable The throwable Exception
+   * @return Unwrapped umbrella exception
+   */
   private Throwable unwrapUmbrellaException(Throwable throwable) {
     if (throwable instanceof UmbrellaException) {
       UmbrellaException umbrella = (UmbrellaException) throwable;
@@ -95,6 +104,10 @@ public class PhoneBillGwt implements EntryPoint {
     return throwable;
   }
 
+  /**
+   * This method performs a check on phone number string inputs using a regular expression.
+   * @param phoneNum The phone number stirng to validated
+   */
   private void checkPhoneNumber(String phoneNum){
     RegExp pattern = RegExp.compile("^[0-9]{3}-[0-9]{3}-[0-9]{4}$");
     com.google.gwt.regexp.shared.MatchResult result = pattern.exec(phoneNum);
@@ -104,6 +117,10 @@ public class PhoneBillGwt implements EntryPoint {
     }
   }
 
+  /**
+   * This method creates a new FlexTable with some CSS properties set.
+   * @return A new FlexTable object
+   */
   private FlexTable newTable(){
     FlexTable table = new FlexTable();
     table.setBorderWidth(3);
@@ -112,6 +129,13 @@ public class PhoneBillGwt implements EntryPoint {
     return table;
   }
 
+  /**
+   * This method displays all the PhoneCalls in a PhoneBill for a given customer
+   * in the provided FlexTable.
+   * @param table The FlexTable to display the PhoneCalls
+   * @param customer The name of the customer
+   * @param bill The PhoneBill for that customer
+   */
   private void displayResult(FlexTable table, String customer, PhoneBill bill){
     table.removeAllRows();
     table.setText(0,0, "Customer: " + customer);
@@ -167,6 +191,10 @@ public class PhoneBillGwt implements EntryPoint {
     return menu;
   }
 
+  /**
+   * This method creates a vertical panel for the README
+   * @return VerticalPanel object containing the README information
+   */
   private VerticalPanel showREADME(){
     Label header = new Label("README");
     header.getElement().getStyle().setMarginTop(1, Unit.PCT);
@@ -196,6 +224,10 @@ public class PhoneBillGwt implements EntryPoint {
     return vp;
   }
 
+  /**
+   * This methods creates a Vertical Panel for the add phone call form.
+   * @return Vertical Panel containing the form and table to display results.
+   */
   private VerticalPanel addPhoneCallForm(){
     TextBox customer;
     TextBox callee;
@@ -342,6 +374,11 @@ public class PhoneBillGwt implements EntryPoint {
     return vp;
   }
 
+  /**
+   * This method creates a VerticalPanel containing the search date range form and displays the
+   * results in a FlexTable
+   * @return VerticalPanel containing the search form
+   */
   private VerticalPanel searchDates(){
     TextBox customer;
     TextBox startTime;
@@ -442,41 +479,9 @@ public class PhoneBillGwt implements EntryPoint {
     return vp;
   }
 
-  private void throwClientSideException() {
-    logger.info("About to throw a client-side exception");
-    throw new IllegalStateException("Expected exception on the client side");
-  }
-
-  private void showUndeclaredException() {
-    logger.info("Calling throwUndeclaredException");
-    phoneBillService.throwUndeclaredException(new AsyncCallback<Void>() {
-      @Override
-      public void onFailure(Throwable ex) {
-        alertOnException(ex);
-      }
-
-      @Override
-      public void onSuccess(Void aVoid) {
-        alerter.alert("This shouldn't happen");
-      }
-    });
-  }
-
-  private void showDeclaredException() {
-    logger.info("Calling throwDeclaredException");
-    phoneBillService.throwDeclaredException(new AsyncCallback<Void>() {
-      @Override
-      public void onFailure(Throwable ex) {
-        alertOnException(ex);
-      }
-
-      @Override
-      public void onSuccess(Void aVoid) {
-        alerter.alert("This shouldn't happen");
-      }
-    });
-  }
-
+  /**
+   * This method is called when the web application is starting up.
+   */
   @Override
   public void onModuleLoad() {
     setUpUncaughtExceptionHandler();
@@ -491,6 +496,9 @@ public class PhoneBillGwt implements EntryPoint {
     });
   }
 
+  /**
+   * This method sets up the UI for the web application.
+   */
   private void setupUI() {
     RootPanel rootPanel = RootPanel.get();
     rootPanel.add(this.navbar());
@@ -501,13 +509,6 @@ public class PhoneBillGwt implements EntryPoint {
     deck.add(searchDates());
 
     deck.showWidget(0);
-    /*
-    RootPanel rootPanel = RootPanel.get();
-    rootPanel.add(this.navbar());
-    rootPanel.add(addPhoneCallForm());
-    rootPanel.add(new HTML("<hr  style=\"width:100%;\" />"));
-    rootPanel.add(searchDates());
-    */
   }
 
   private void setUpUncaughtExceptionHandler() {

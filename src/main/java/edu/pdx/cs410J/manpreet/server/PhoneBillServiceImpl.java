@@ -16,11 +16,23 @@ public class PhoneBillServiceImpl extends RemoteServiceServlet implements PhoneB
 {
   private final Map<String, PhoneBill> bills = new HashMap<String, PhoneBill>();
 
+  /**
+   * This method fetches the customer's phone bill
+   * @param name Name of the customer
+   * @return PhoneBill object containing the customer's information
+   */
   @Override
   public PhoneBill getPhoneBill(String name) {
     return this.bills.get(name);
   }
 
+  /**
+   * This method adds a phone call for a customer. It creates a new PhoneBill object if the
+   * customer doesn't exist in the HashMap.
+   * @param name Name of the customer
+   * @param call PhoneCall object to add
+   * @return Updated/New PhoneBill object for that customer
+   */
   @Override
   public PhoneBill addPhoneCall(String name, PhoneCall call){
     //Get the customer's Phone Bill. If none exist, create one and add the PhoneCall to it.
@@ -33,6 +45,14 @@ public class PhoneBillServiceImpl extends RemoteServiceServlet implements PhoneB
     return bill;
   }
 
+  /**
+   * This method searches for phone calls for a customer within a specified date range.
+   * @param name Name of the customer
+   * @param start Start date of the search
+   * @param end End date of the search
+   * @return PhoneBill object containing PhoneCalls for that customer within the specified date
+   *         range
+   */
   @Override
   public PhoneBill searchPhoneBill(String name, Date start, Date end){
     PhoneBill customer = this.getPhoneBill(name);
